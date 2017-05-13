@@ -1,27 +1,26 @@
 import * as React from 'react'
 import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
+import Record, { RecordValue } from "./Record"
 
 interface Point {
   x: number
   y: number
 }
 
-interface BlockState {
+export interface BlockValue {
+  id: string
   down: boolean
   delta: Point
   start?: Point
   end?: Point
 }
 
-export default class Block extends Component<{}> {
+interface BlockProps {
+  store: Record<BlockValue>
+}
 
-  store = new Value({
-    down: false,
-    delta: {x: 0, y: 0},
-    start: null,
-    end: null,
-  } as BlockState)
+export default class Block extends Component<BlockProps> {
 
   componentWillUnmount() {
     this.stopListeners()
@@ -42,8 +41,8 @@ export default class Block extends Component<{}> {
       x: e.pageX,
       y: e.pageY,
     }
-    const store = this.store.get()
-    this.store.set({
+    const store = this.props.store.get()
+    this.props.store.set({
       ...store,
       down: true,
       start: point,
@@ -53,13 +52,13 @@ export default class Block extends Component<{}> {
   }
 
   handleMouseMove = (e: MouseEvent) => {
-    const store = this.store.get()
+    const store = this.props.store.get()
     if (store.down) {
       const point = {
         x: e.pageX,
         y: e.pageY,
       }
-      this.store.set({
+      this.props.store.set({
         ...store,
         end: point,
       })
@@ -67,9 +66,9 @@ export default class Block extends Component<{}> {
   }
 
   handleMouseUp = (e: MouseEvent) => {
-    const store = this.store.get()
+    const store = this.props.store.get()
     if (store.down) {
-      this.store.set({
+      this.props.store.set({
         ...store,
         down: false,
         start: null,
@@ -81,7 +80,7 @@ export default class Block extends Component<{}> {
   }
 
   computeDelta(): Point {
-    const { down, delta, start, end } = this.store.get()
+    const { down, delta, start, end } = this.props.store.get()
     if (down) {
       return {
         x: Math.round((delta.x + (end.x - start.x)) / 10) * 10,
