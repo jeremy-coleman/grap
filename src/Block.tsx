@@ -1,6 +1,6 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { css } from 'glamor'
+import * as React from 'react'
+import { Value } from 'reactive-magic'
+import Component from 'reactive-magic/component'
 
 interface Point {
   x: number
@@ -14,7 +14,14 @@ interface BlockState {
   end?: Point
 }
 
-export default class Block extends React.PureComponent<{}, BlockState> {
+export default class Block extends Component<{}> {
+
+  store = new Value({
+    down: false,
+    delta: {x: 0, y: 0},
+    start: null,
+    end: null,
+  } as BlockState)
 
   componentWillUnmount() {
     this.stopListeners()
@@ -30,19 +37,14 @@ export default class Block extends React.PureComponent<{}, BlockState> {
     window.removeEventListener("mouseup", this.handleMouseUp)
   }
 
-  state = {
-    down: false,
-    delta: {x: 0, y: 0},
-    start: null,
-    end: null,
-  }
-
   handleMouseDown = (e: React.MouseEvent<Element>) => {
     const point = {
       x: e.pageX,
       y: e.pageY,
     }
-    this.setState({
+    const store = this.store.get()
+    this.store.set({
+      ...store,
       down: true,
       start: point,
       end: point,
@@ -51,20 +53,24 @@ export default class Block extends React.PureComponent<{}, BlockState> {
   }
 
   handleMouseMove = (e: MouseEvent) => {
-    if (this.state.down) {
+    const store = this.store.get()
+    if (store.down) {
       const point = {
         x: e.pageX,
         y: e.pageY,
       }
-      this.setState({
+      this.store.set({
+        ...store,
         end: point,
       })
     }
   }
 
   handleMouseUp = (e: MouseEvent) => {
-    if (this.state.down) {
-      this.setState({
+    const store = this.store.get()
+    if (store.down) {
+      this.store.set({
+        ...store,
         down: false,
         start: null,
         end: null,
@@ -75,7 +81,7 @@ export default class Block extends React.PureComponent<{}, BlockState> {
   }
 
   computeDelta(): Point {
-    const {down, delta, start, end } = this.state
+    const { down, delta, start, end } = this.store.get()
     if (down) {
       return {
         x: Math.round((delta.x + (end.x - start.x)) / 10) * 10,
@@ -100,7 +106,7 @@ export default class Block extends React.PureComponent<{}, BlockState> {
     }
   }
 
-  render() {
+  view() {
     return (
       <div
         style={this.getStyle()}

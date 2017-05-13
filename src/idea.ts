@@ -18,8 +18,9 @@ examples
 
 todo
 - build a graph editor
-- make it do some simple math
+  - persist async to localStorage
+  -
 - persist everything immutably
-
+- make it do some simple math
 
 */
