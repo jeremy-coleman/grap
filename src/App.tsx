@@ -12,7 +12,7 @@ export default class App extends Component<AppProps> {
     return (
       <div>
         {this.props.blockRecords.map(record =>
-          <Block store={record} key={record.id}/>
+          <Block record={record} key={record.id}/>
         )}
       </div>
     )

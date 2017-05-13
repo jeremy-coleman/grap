@@ -17,7 +17,7 @@ export interface BlockValue {
 }
 
 interface BlockProps {
-  store: Record<BlockValue>
+  record: Record<BlockValue>
 }
 
 export default class Block extends Component<BlockProps> {
@@ -41,9 +41,9 @@ export default class Block extends Component<BlockProps> {
       x: e.pageX,
       y: e.pageY,
     }
-    const store = this.props.store.get()
-    this.props.store.set({
-      ...store,
+    const record = this.props.record.get()
+    this.props.record.set({
+      ...record,
       down: true,
       start: point,
       end: point,
@@ -52,24 +52,24 @@ export default class Block extends Component<BlockProps> {
   }
 
   handleMouseMove = (e: MouseEvent) => {
-    const store = this.props.store.get()
-    if (store.down) {
+    const record = this.props.record.get()
+    if (record.down) {
       const point = {
         x: e.pageX,
         y: e.pageY,
       }
-      this.props.store.set({
-        ...store,
+      this.props.record.set({
+        ...record,
         end: point,
       })
     }
   }
 
   handleMouseUp = (e: MouseEvent) => {
-    const store = this.props.store.get()
-    if (store.down) {
-      this.props.store.set({
-        ...store,
+    const record = this.props.record.get()
+    if (record.down) {
+      this.props.record.set({
+        ...record,
         down: false,
         start: null,
         end: null,
@@ -80,7 +80,7 @@ export default class Block extends Component<BlockProps> {
   }
 
   computeDelta(): Point {
-    const { down, delta, start, end } = this.props.store.get()
+    const { down, delta, start, end } = this.props.record.get()
     if (down) {
       return {
         x: Math.round((delta.x + (end.x - start.x)) / 10) * 10,
