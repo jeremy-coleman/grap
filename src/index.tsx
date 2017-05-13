@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { css } from 'glamor'
+import Block from "./Block"
 
 const style = css({
   color: 'blue'
@@ -10,7 +11,8 @@ class Index extends React.PureComponent<{},{}> {
   render() {
     return (
       <div className={`${style}`}>
-        Hello World!
+        <Block/>
+        <Block/>
       </div>
     )
   }
