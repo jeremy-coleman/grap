@@ -1,15 +1,17 @@
-export default class Storage<Value> {
+import { RecordValue } from "./Record"
+
+export default class Storage<Entry extends RecordValue> {
 
   constructor(private name: string) {}
 
-  async get(id): Promise<Value> {
+  async get(id): Promise<Entry> {
     const value = localStorage.getItem(this.name + id)
     if (value) {
       return JSON.parse(value)
     }
   }
 
-  async set(id, value: Value) {
+  async set(id, value: Entry) {
     localStorage.setItem(this.name + id, JSON.stringify(value))
   }
 
@@ -17,7 +19,7 @@ export default class Storage<Value> {
     localStorage.removeItem(this.name + id)
   }
 
-  async getAll(): Promise<Array<Value>>  {
+  async getAll(): Promise<Array<Entry>>  {
     const values = []
     const length = localStorage.length
     for (let i = 0; i < length; i++) {
