@@ -18,7 +18,6 @@ examples
 
 todo
 - build a graph editor
-  - persist async to localStorage
   - create blocks, delete blocks, select blocks
   - zoom and move around the surface
 - persist everything immutably

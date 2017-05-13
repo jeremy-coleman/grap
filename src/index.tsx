@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom'
 import { css } from 'glamor'
 import BlockRecord from "./BlockRecord"
 import App from "./App"
+import uuid from 'uuid/v4'
 
 const style = css({
   color: 'blue'
@@ -12,8 +13,8 @@ async function main() {
   const records = await BlockRecord.load()
   if (records.length === 0) {
     records.push(
-      new BlockRecord({
-        id: "1",
+      BlockRecord.create({
+        id: uuid(),
         down: false,
         delta: {x: 0, y: 0},
         start: null,
@@ -21,8 +22,8 @@ async function main() {
       })
     )
     records.push(
-      new BlockRecord({
-        id: "2",
+      BlockRecord.create({
+        id: uuid(),
         down: false,
         delta: {x: 100, y: 0},
         start: null,

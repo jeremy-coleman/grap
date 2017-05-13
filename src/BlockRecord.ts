@@ -4,6 +4,12 @@ import { BlockValue } from "./Block"
 
 export default class BlockRecord extends Record<BlockValue> {
 
+  static create(value: BlockValue) {
+    const record = new BlockRecord(value)
+    Record.save(value, World.RecordStorage)
+    return record
+  }
+
   constructor(value: BlockValue) {
     super(value, World.RecordStorage)
   }
