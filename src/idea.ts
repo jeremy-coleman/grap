@@ -18,7 +18,6 @@ examples
 
 todo
 - build a graph editor
-  - delete blocks, keyboard shortcuts
   - zoom and move around the surface
   - connect lines between blocks
 - persist everything immutably

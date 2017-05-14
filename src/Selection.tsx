@@ -109,6 +109,19 @@ export default class Selection extends Component<{}> {
     }
   }
 
+  getPerspectiveStyle(): React.CSSProperties {
+    const { x, y, zoom } = World.PerspectiveStore.get()
+    return {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      transform: `translate3d(${x}px, ${y}px, 0px) scale(${zoom})`
+
+    }
+  }
+
   willMount() {
     window.addEventListener("keydown", this.handleKeyDown)
   }
@@ -142,7 +155,9 @@ export default class Selection extends Component<{}> {
             style={this.getContainerStyle()}
           >
             {this.viewSelection(store)}
-            {this.props.children}
+            <div style={this.getPerspectiveStyle()}>
+              {this.props.children}
+            </div>
           </div>
         }
       />
