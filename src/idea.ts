@@ -19,6 +19,8 @@ examples
 todo
 - build a graph editor
   - select blocks, delete blocks
+    - draggable abstraction, account for position on page
+    - polish up selection, clicking new blocks, etc.
   - zoom and move around the surface
   - connect lines between blocks
 - persist everything immutably

@@ -19,6 +19,8 @@ async function main() {
       BlockRecord.create({
         id: uuid(),
         down: false,
+        height: 50,
+        width: 50,
         delta: {x: 0, y: 0},
         start: null,
         end: null,
@@ -28,6 +30,8 @@ async function main() {
       BlockRecord.create({
         id: uuid(),
         down: false,
+        height: 50,
+        width: 50,
         delta: {x: 100, y: 0},
         start: null,
         end: null,

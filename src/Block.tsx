@@ -92,10 +92,12 @@ export default class Block extends Component<BlockProps> {
 
   getStyle(): React.CSSProperties {
     const delta = this.computeDelta()
+    const { height, width } = this.props.record.get()
+    const selected = World.SelectionStore.isSelected(this.props.record)
     return {
-      width: 50,
-      height: 50,
-      border: "1px solid black",
+      width,
+      height,
+      border: `2px solid ${selected ? "red" : "black"}`,
       borderRadius: 3,
       backgroundColor: "#333333",
       position: "absolute",
@@ -116,8 +118,12 @@ export default class Block extends Component<BlockProps> {
 
 export interface BlockValue {
   id: string
+  delta: Point // rename to origin
+  height: number
+  width: number
+
+  // these should be abstracted elsewhere
   down: boolean
-  delta: Point
   start?: Point
   end?: Point
 }

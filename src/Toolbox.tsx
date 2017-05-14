@@ -11,6 +11,8 @@ export default class Toolbox extends Component<ToolboxProps> {
     BlockRecord.create({
       id: uuid(),
       down: false,
+      height: 50,
+      width: 50,
       delta: {x: 0, y: 0},
       start: null,
       end: null,

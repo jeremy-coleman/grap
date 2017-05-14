@@ -19,6 +19,14 @@ export class SelectionStore {
   set(value: Array<BlockRecord>) {
     this.selected.set(value)
   }
+
+  isSelected(record: BlockRecord) {
+    return this.selected.get().some(r => r.id === record.id)
+  }
+
+  isEmpty() {
+    return this.selected.get().length === 0
+  }
 }
 
 interface Point {
@@ -54,6 +62,26 @@ export default class Selection extends Component<{}> {
     end: null,
   })
 
+  updateSelection = () => {
+    const mouse = this.mouse.get()
+    if (mouse.down) {
+      const blocks = World.BlockRegistry.get()
+      const left = Math.min(mouse.start.x, mouse.end.x)
+      const right = Math.max(mouse.start.x, mouse.end.x)
+      const top = Math.min(mouse.start.y, mouse.end.y)
+      const bottom = Math.max(mouse.start.y, mouse.end.y)
+      const selected = blocks.filter(block => {
+        const { height, width, delta: { x, y } } = block.get()
+        const xAround = left < x && right > x
+        const xInside = left > x && left < x + width
+        const yAround = top < y && bottom > y
+        const yInside = top > y && top < y + height
+        return (xAround || xInside) && (yAround || yInside)
+      })
+      World.SelectionStore.set(selected)
+    }
+  }
+
   handleMouseDown = (e: React.MouseEvent<Element>) => {
     const point = {
       x: e.pageX,
@@ -65,6 +93,7 @@ export default class Selection extends Component<{}> {
       end: point,
     })
     this.startListeners()
+    this.updateSelection()
     e.stopPropagation()
     e.preventDefault()
   }
@@ -80,6 +109,7 @@ export default class Selection extends Component<{}> {
         ...mouse,
         end: point
       })
+      this.updateSelection()
     }
   }
 
