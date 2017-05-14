@@ -60,9 +60,9 @@ export default class Selection extends Component<{}> {
       const selected = blocks.filter(block => {
         const { height, width, origin: { x, y } } = block.get()
         const xAround = left < x && right > x
-        const xInside = left > x && left < x + width
+        const xInside = left >= x && left <= x + width
         const yAround = top < y && bottom > y
-        const yInside = top > y && top < y + height
+        const yInside = top >= y && top <= y + height
         return (xAround || xInside) && (yAround || yInside)
       })
       World.SelectionStore.set(selected)
