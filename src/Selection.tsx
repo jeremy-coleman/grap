@@ -33,7 +33,24 @@ export class SelectionStore {
 
 export default class Selection extends Component<{}> {
 
+  accountForOrigin(store: DraggableStore): DraggableStore {
+    const rect = this.root.getBoundingClientRect()
+    return {
+      ...store,
+      start: {
+        x: store.start.x - rect.left,
+        y: store.start.y - rect.top,
+      },
+      end: {
+        x: store.end.x - rect.left,
+        y: store.end.y - rect.top,
+      }
+    }
+
+  }
+
   updateSelection = (store: DraggableStore) => {
+    store = this.accountForOrigin(store)
     if (store.down) {
       const blocks = World.BlockRegistry.get()
       const left = Math.min(store.start.x, store.end.x)
@@ -53,6 +70,7 @@ export default class Selection extends Component<{}> {
   }
 
   getSelectionStyle(store: DraggableStore): React.CSSProperties {
+    store = this.accountForOrigin(store)
     return {
       width: Math.abs(store.start.x - store.end.x),
       height: Math.abs(store.start.y - store.end.y),
@@ -90,6 +108,11 @@ export default class Selection extends Component<{}> {
     }
   }
 
+  private root: Element
+  ref = (node) => {
+    this.root = node
+  }
+
   view() {
     return (
       <Draggable
@@ -98,6 +121,7 @@ export default class Selection extends Component<{}> {
         view={(store, handlers) =>
           <div
             {...handlers}
+            ref={this.ref}
             style={this.getContainerStyle()}
           >
             {this.viewSelection(store)}
