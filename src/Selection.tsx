@@ -3,6 +3,7 @@ import World from "./World"
 import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
 import { BlockRecord } from "./Block"
+import Draggable, { DraggableStore } from "./Draggable"
 
 export class SelectionStore {
 
@@ -34,42 +35,15 @@ interface Point {
   y: number
 }
 
-interface MouseStore {
-    down: boolean
-    start?: Point
-    end?: Point
-}
-
 export default class Selection extends Component<{}> {
 
-  willUnmount() {
-    this.stopListeners()
-  }
-
-  startListeners() {
-    window.addEventListener("mousemove", this.handleMouseMove)
-    window.addEventListener("mouseup", this.handleMouseUp)
-  }
-
-  stopListeners() {
-    window.removeEventListener("mousemove", this.handleMouseMove)
-    window.removeEventListener("mouseup", this.handleMouseUp)
-  }
-
-  private mouse: Value<MouseStore> = new Value({
-    down: false,
-    start: null,
-    end: null,
-  })
-
-  updateSelection = () => {
-    const mouse = this.mouse.get()
-    if (mouse.down) {
+  updateSelection = (store: DraggableStore) => {
+    if (store.down) {
       const blocks = World.BlockRegistry.get()
-      const left = Math.min(mouse.start.x, mouse.end.x)
-      const right = Math.max(mouse.start.x, mouse.end.x)
-      const top = Math.min(mouse.start.y, mouse.end.y)
-      const bottom = Math.max(mouse.start.y, mouse.end.y)
+      const left = Math.min(store.start.x, store.end.x)
+      const right = Math.max(store.start.x, store.end.x)
+      const top = Math.min(store.start.y, store.end.y)
+      const bottom = Math.max(store.start.y, store.end.y)
       const selected = blocks.filter(block => {
         const { height, width, origin: { x, y } } = block.get()
         const xAround = left < x && right > x
@@ -82,75 +56,30 @@ export default class Selection extends Component<{}> {
     }
   }
 
-  handleMouseDown = (e: React.MouseEvent<Element>) => {
-    const point = {
-      x: e.pageX,
-      y: e.pageY,
-    }
-    this.mouse.set({
-      down: true,
-      start: point,
-      end: point,
-    })
-    this.startListeners()
-    this.updateSelection()
-    e.stopPropagation()
-    e.preventDefault()
-  }
-
-  handleMouseMove = (e: MouseEvent) => {
-    const mouse = this.mouse.get()
-    if (mouse.down) {
-      const point = {
-        x: e.pageX,
-        y: e.pageY,
-      }
-      this.mouse.set({
-        ...mouse,
-        end: point
-      })
-      this.updateSelection()
-    }
-  }
-
-  handleMouseUp = (e: MouseEvent) => {
-    const mouse = this.mouse.get()
-    if (mouse.down) {
-      this.mouse.set({
-        down: false,
-        start: null,
-        end: null,
-      })
-      this.stopListeners()
-    }
-  }
-
-  getSelectionStyle(): React.CSSProperties {
-    const mouse = this.mouse.get()
+  getSelectionStyle(store: DraggableStore): React.CSSProperties {
     return {
-      width: Math.abs(mouse.start.x - mouse.end.x),
-      height: Math.abs(mouse.start.y - mouse.end.y),
+      width: Math.abs(store.start.x - store.end.x),
+      height: Math.abs(store.start.y - store.end.y),
       border: "1px solid blue",
       borderRadius: 3,
       backgroundColor: "#0000BB",
       opacity: 0.2,
       position: "absolute",
       transform: `translate3d(${
-        Math.min(mouse.start.x, mouse.end.x)
+        Math.min(store.start.x, store.end.x)
       }px,${
-        Math.min(mouse.start.y, mouse.end.y)
+        Math.min(store.start.y, store.end.y)
       }px, 0)`,
       boxSizing: "border-box",
     }
   }
 
-  viewSelection() {
-    const mouse = this.mouse.get()
-    if (!mouse.down) {
+  viewSelection(store: DraggableStore) {
+    if (!store.down) {
       return null
     } else {
       return (
-        <div style={this.getSelectionStyle()}/>
+        <div style={this.getSelectionStyle(store)}/>
       )
     }
   }
@@ -167,10 +96,19 @@ export default class Selection extends Component<{}> {
 
   view() {
     return (
-      <div style={this.getContainerStyle()} onMouseDown={this.handleMouseDown}>
-        {this.viewSelection()}
-        {this.props.children}
-      </div>
+      <Draggable
+        onDragStart={this.updateSelection}
+        onDragMove={this.updateSelection}
+        view={(store, handlers) =>
+          <div
+            {...handlers}
+            style={this.getContainerStyle()}
+          >
+            {this.viewSelection(store)}
+            {this.props.children}
+          </div>
+        }
+      />
     )
   }
 
