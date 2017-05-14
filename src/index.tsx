@@ -6,8 +6,10 @@ import App from "./App"
 import World from "./World"
 import uuid from 'uuid/v4'
 
-const style = css({
-  color: 'blue'
+css.global("html, body", {
+  padding: 0,
+  margin: 0,
+  boxSizing: "border-box",
 })
 
 async function main() {

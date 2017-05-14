@@ -18,8 +18,7 @@ examples
 
 todo
 - build a graph editor
-  - create blocks, delete blocks, select blocks
-    - create a block registry
+  - select blocks, delete blocks
   - zoom and move around the surface
   - connect lines between blocks
 - persist everything immutably

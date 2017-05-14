@@ -46,6 +46,8 @@ export default class Block extends Component<BlockProps> {
       end: point,
     })
     this.startListeners()
+    e.stopPropagation()
+    e.preventDefault()
   }
 
   handleMouseMove = (e: MouseEvent) => {
