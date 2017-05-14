@@ -10,8 +10,8 @@ export default class Button extends Component<ButtonProps> {
 
   getStyle(): React.CSSProperties {
     return {
-      backgroundColor: World.Theme.background.get(),
-      border: `2px solid ${World.Theme.accent.get()}`,
+      backgroundColor: World.Theme.secondary2.get(),
+      border: `2px solid ${World.Theme.secondary.get()}`,
       borderRadius: 3,
       padding: "4px 8px",
       color: World.Theme.text.get(),

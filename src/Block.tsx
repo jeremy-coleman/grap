@@ -60,12 +60,12 @@ export default class Block extends Component<BlockProps> {
     const origin = Block.computeOrigin(this.props.record, store)
     const { height, width } = this.props.record.get()
     const selected = World.SelectionStore.isSelected(this.props.record)
-    const accent = World.Theme.accent.get()
+    const primary = World.Theme.primary.get()
     const border = World.Theme.border.get()
     return {
       width,
       height,
-      border: `2px solid ${selected ? accent : border}`,
+      border: `2px solid ${selected ? primary : border}`,
       borderRadius: 3,
       backgroundColor: World.Theme.block.get(),
       position: "absolute",
