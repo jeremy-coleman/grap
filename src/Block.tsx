@@ -20,10 +20,11 @@ interface BlockProps {
 
 export default class Block extends Component<BlockProps> {
 
-  computeOrigin(store: DraggableStore): Point {
+  static computeOrigin(record: BlockRecord, store: DraggableStore): Point {
+    const selected = World.SelectionStore.isSelected(record)
     const { down, start, end } = store
-    const { origin } = this.props.record.get()
-    if (down) {
+    const { origin } = record.get()
+    if (selected && down) {
       return {
         x: Math.round((origin.x + (end.x - start.x)) / 10) * 10,
         y: Math.round((origin.y + (end.y - start.y)) / 10) * 10,
@@ -33,16 +34,32 @@ export default class Block extends Component<BlockProps> {
     }
   }
 
+  handleDragStart = (store: DraggableStore) => {
+    if (!World.SelectionStore.isSelected(this.props.record)) {
+      World.SelectionStore.set([this.props.record])
+    }
+  }
+
+  didntMove(store: DraggableStore) {
+    return store.start.x === store.end.x && store.start.y === store.end.y
+  }
+
   handleDragEnd = (store: DraggableStore) => {
-    const record = this.props.record.get()
-    this.props.record.set({
-      ...record,
-      origin: this.computeOrigin(store)
-    })
+    if (this.didntMove(store)) {
+      World.SelectionStore.set([this.props.record])
+    } else {
+      World.SelectionStore.get().forEach(record => {
+        const properties = record.get()
+        record.set({
+          ...properties,
+          origin: Block.computeOrigin(record, store)
+        })
+      })
+    }
   }
 
   getStyle(store: DraggableStore): React.CSSProperties {
-    const origin = this.computeOrigin(store)
+    const origin = Block.computeOrigin(this.props.record, store)
     const { height, width } = this.props.record.get()
     const selected = World.SelectionStore.isSelected(this.props.record)
     return {
@@ -60,6 +77,8 @@ export default class Block extends Component<BlockProps> {
   view() {
     return (
       <Draggable
+        draggableStore={World.SelectionStore.draggableStore}
+        onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
         view={(store, handlers) =>
           <div

@@ -7,8 +7,9 @@ import Draggable, { DraggableStore } from "./Draggable"
 
 export class SelectionStore {
 
-  private selected: Value<Array<BlockRecord>>
+  public draggableStore = Draggable.store()
 
+  private selected: Value<Array<BlockRecord>>
   constructor(selected: Array<BlockRecord> = []) {
     this.selected = new Value(selected)
   }
@@ -28,11 +29,6 @@ export class SelectionStore {
   isEmpty() {
     return this.selected.get().length === 0
   }
-}
-
-interface Point {
-  x: number
-  y: number
 }
 
 export default class Selection extends Component<{}> {
