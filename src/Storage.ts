@@ -2,7 +2,7 @@ import { RecordValue } from "./Record"
 
 export default class Storage<Entry> {
 
-  constructor(private name: string) {}
+  constructor(private name: string = "") {}
 
   async get(id): Promise<Entry> {
     const value = localStorage.getItem(this.name + id)

@@ -3,7 +3,7 @@ import Record, { RecordValue } from "./Record"
 
 export default class Registry<Kind extends RecordValue> {
   private records: Value<Array<Record<Kind>>>
-  constructor(records: Array<Record<Kind>>) {
+  constructor(records: Array<Record<Kind>> = []) {
     this.records = new Value(records)
   }
 

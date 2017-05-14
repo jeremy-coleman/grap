@@ -32,7 +32,6 @@ async function main() {
       })
     )
   }
-  World.BlockRegistry.set(records)
 
   const root = document.createElement('div')
   document.body.appendChild(root)

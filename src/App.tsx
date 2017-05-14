@@ -9,14 +9,13 @@ interface AppProps {}
 export default class App extends Component<AppProps> {
 
   createBlock = () => {
-    const record =  BlockRecord.create({
+    BlockRecord.create({
       id: uuid(),
       down: false,
       delta: {x: 0, y: 0},
       start: null,
       end: null,
     })
-    World.BlockRegistry.add(record)
   }
 
   view() {

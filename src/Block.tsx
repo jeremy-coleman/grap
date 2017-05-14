@@ -1,3 +1,7 @@
+// A `Block` is a component that renders a `BlockRecord` which is a reactive
+// object that holds a `BlockValue`, and persists it to BlockStorage and
+// registers itself with a `BlockRegistry`.
+
 import * as React from 'react'
 import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
@@ -124,14 +128,13 @@ export class BlockRecord extends Record<BlockValue> {
     return record
   }
 
-  constructor(value: BlockValue) {
-    super(value, World.BlockStorage)
-  }
-
   static async load(): Promise<Array<BlockRecord>> {
     const blocks = await World.BlockStorage.getAll()
     const records = blocks.map(block => new BlockRecord(block))
     return records
   }
 
+  constructor(value: BlockValue) {
+    super(value, World.BlockStorage, World.BlockRegistry)
+  }
 }

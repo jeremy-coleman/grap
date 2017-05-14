@@ -1,6 +1,7 @@
 import World from "./World"
 import { Value } from 'reactive-magic'
 import Storage from "./Storage"
+import Registry from "./Registry"
 
 export interface RecordValue {
   id: string
@@ -8,8 +9,8 @@ export interface RecordValue {
 
 export default class Record<Kind extends RecordValue> {
 
-  static create<Kind extends RecordValue>(value: Kind, storage: Storage<Kind>) {
-    const record = new Record(value, storage)
+  static create<Kind extends RecordValue>(value: Kind, storage: Storage<Kind>, registry: Registry<Kind>) {
+    const record = new Record(value, storage, registry)
     Record.save(value, storage)
     return record
   }
@@ -21,10 +22,13 @@ export default class Record<Kind extends RecordValue> {
   public id: string
   private value: Value<Kind>
   private storage: Storage<Kind>
-  constructor(value: Kind, storage: Storage<Kind>) {
+  private registry: Registry<Kind>
+  constructor(value: Kind, storage: Storage<Kind>, registry: Registry<Kind>) {
     this.id = value.id
     this.value = new Value(value)
     this.storage = storage
+    this.registry = registry
+    this.registry.add(this)
   }
 
   get() {
