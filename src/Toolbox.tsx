@@ -2,6 +2,7 @@ import * as React from 'react'
 import Component from 'reactive-magic/component'
 import { BlockRecord } from "./Block"
 import Button from "./Button"
+import World from "./World"
 import uuid from "uuid/v4"
 
 interface ToolboxProps {}
@@ -9,12 +10,13 @@ interface ToolboxProps {}
 export default class Toolbox extends Component<ToolboxProps> {
 
   createBlock = () => {
-    BlockRecord.create({
+    const record = BlockRecord.create({
       id: uuid(),
       height: 50,
       width: 50,
       origin: {x: 0, y: 0},
     })
+    World.SelectionStore.set([record])
   }
 
   getStyle(): React.CSSProperties {

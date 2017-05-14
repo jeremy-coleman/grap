@@ -4,6 +4,7 @@ import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
 import { BlockRecord } from "./Block"
 import Draggable, { DraggableStore } from "./Draggable"
+import keycode from "keycode"
 
 export class SelectionStore {
 
@@ -105,6 +106,22 @@ export default class Selection extends Component<{}> {
       top: 0,
       right: 0,
       bottom: 0,
+    }
+  }
+
+  willMount() {
+    window.addEventListener("keydown", this.handleKeyDown)
+  }
+
+  willUnount() {
+    window.removeEventListener("keydown", this.handleKeyDown)
+  }
+
+  handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === keycode("backspace")) {
+      World.SelectionStore.get().forEach(block => {
+        block.delete()
+      })
     }
   }
 

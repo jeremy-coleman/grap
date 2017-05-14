@@ -45,7 +45,7 @@ export default class Draggable extends Component<DraggableProps> {
     }
   }
 
-  componentWillUnmount() {
+  willUnmount() {
     this.stopListeners()
   }
 

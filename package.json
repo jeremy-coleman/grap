@@ -14,6 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "glamor": "^2.20.24",
+    "keycode": "^2.1.9",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "reactive-magic": "^1.5.0",

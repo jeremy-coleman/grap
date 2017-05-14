@@ -19,6 +19,10 @@ export default class Record<Kind extends RecordValue> {
     storage.set(value.id, value)
   }
 
+  static delete<Kind extends RecordValue>(value: Kind, storage: Storage<Kind>) {
+    storage.remove(value.id)
+  }
+
   public id: string
   private value: Value<Kind>
   private storage: Storage<Kind>
@@ -43,6 +47,11 @@ export default class Record<Kind extends RecordValue> {
   assign(value: Partial<Kind>) {
     this.value.assign(value)
     Record.save(this.value.get(), this.storage)
+  }
+
+  delete() {
+    this.registry.remove(this)
+    Record.delete(this.value.get(), this.storage)
   }
 
 }
