@@ -58,8 +58,8 @@ export default class Selection extends Component<{}> {
       height: Math.abs(store.start.y - store.end.y),
       border: "1px solid blue",
       borderRadius: 3,
-      backgroundColor: "#0000BB",
-      opacity: 0.2,
+      backgroundColor: World.Theme.accent.get(),
+      opacity: 0.1,
       position: "absolute",
       transform: `translate3d(${
         Math.min(store.start.x, store.end.x)

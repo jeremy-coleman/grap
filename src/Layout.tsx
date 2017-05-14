@@ -28,14 +28,16 @@ export default class Layout extends Component<LayoutProps> {
     return {
       flex: 1,
       position: "relative",
+      backgroundColor: World.Theme.background.get(),
     }
   }
 
   getToolboxStyle(): React.CSSProperties {
     return {
       width: 200,
+      borderLeft: `2px solid ${World.Theme.border.get()}`,
       position: "relative",
-      backgroundColor: "#666666",
+      backgroundColor: World.Theme.gutter.get(),
     }
   }
 

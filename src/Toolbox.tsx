@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Component from 'reactive-magic/component'
 import { BlockRecord } from "./Block"
+import Button from "./Button"
 import uuid from "uuid/v4"
 
 interface ToolboxProps {}
@@ -18,14 +19,17 @@ export default class Toolbox extends Component<ToolboxProps> {
 
   getStyle(): React.CSSProperties {
     return {
-
+      display: "flex",
+      flexDirection: "column",
+      padding: 8,
+      justifyContent: "center",
     }
   }
 
   view() {
     return (
       <div style={this.getStyle()}>
-        <button onClick={this.createBlock}>new block</button>
+        <Button onClick={this.createBlock}>new block</Button>
       </div>
     )
   }
