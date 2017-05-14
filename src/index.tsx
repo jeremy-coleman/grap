@@ -1,8 +1,9 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { css } from 'glamor'
-import BlockRecord from "./BlockRecord"
+import { BlockRecord } from "./Block"
 import App from "./App"
+import World from "./World"
 import uuid from 'uuid/v4'
 
 const style = css({
@@ -31,11 +32,12 @@ async function main() {
       })
     )
   }
+  World.BlockRegistry.set(records)
 
   const root = document.createElement('div')
   document.body.appendChild(root)
 
-  ReactDOM.render(<App blockRecords={records}/>, root)
+  ReactDOM.render(<App/>, root)
 
 }
 

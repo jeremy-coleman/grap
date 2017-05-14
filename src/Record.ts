@@ -1,7 +1,6 @@
 import World from "./World"
 import { Value } from 'reactive-magic'
 import Storage from "./Storage"
-import uuid from 'uuid/v4'
 
 export interface RecordValue {
   id: string

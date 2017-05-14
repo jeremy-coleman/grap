@@ -2,22 +2,15 @@ import * as React from 'react'
 import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
 import Record, { RecordValue } from "./Record"
+import World from "./World"
 
 interface Point {
   x: number
   y: number
 }
 
-export interface BlockValue {
-  id: string
-  down: boolean
-  delta: Point
-  start?: Point
-  end?: Point
-}
-
 interface BlockProps {
-  record: Record<BlockValue>
+  record: BlockRecord
 }
 
 export default class Block extends Component<BlockProps> {
@@ -113,4 +106,32 @@ export default class Block extends Component<BlockProps> {
       />
     )
   }
+}
+
+export interface BlockValue {
+  id: string
+  down: boolean
+  delta: Point
+  start?: Point
+  end?: Point
+}
+
+export class BlockRecord extends Record<BlockValue> {
+
+  static create(value: BlockValue) {
+    const record = new BlockRecord(value)
+    Record.save(value, World.BlockStorage)
+    return record
+  }
+
+  constructor(value: BlockValue) {
+    super(value, World.BlockStorage)
+  }
+
+  static async load(): Promise<Array<BlockRecord>> {
+    const blocks = await World.BlockStorage.getAll()
+    const records = blocks.map(block => new BlockRecord(block))
+    return records
+  }
+
 }

@@ -1,6 +1,6 @@
 import { RecordValue } from "./Record"
 
-export default class Storage<Entry extends RecordValue> {
+export default class Storage<Entry> {
 
   constructor(private name: string) {}
 

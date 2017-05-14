@@ -1,17 +1,30 @@
 import * as React from 'react'
 import Component from 'reactive-magic/component'
-import Block from "./Block"
-import BlockRecord from "./BlockRecord"
+import Block, { BlockRecord } from "./Block"
+import World from "./World"
+import uuid from "uuid/v4"
 
-interface AppProps {
-  blockRecords: Array<BlockRecord>
-}
+interface AppProps {}
 
 export default class App extends Component<AppProps> {
+
+  createBlock = () => {
+    const record =  BlockRecord.create({
+      id: uuid(),
+      down: false,
+      delta: {x: 0, y: 0},
+      start: null,
+      end: null,
+    })
+    World.BlockRegistry.add(record)
+  }
+
   view() {
+    const blockRecords = World.BlockRegistry.get()
     return (
       <div>
-        {this.props.blockRecords.map(record =>
+        <button onClick={this.createBlock}>new block</button>
+        {blockRecords.map(record =>
           <Block record={record} key={record.id}/>
         )}
       </div>

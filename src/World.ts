@@ -1,8 +1,10 @@
 import Storage from "./Storage"
-import { BlockValue } from "./Block"
+import Registry from "./Registry"
+import { BlockValue, BlockRecord } from "./Block"
 
 class World {
-  BlockStorage = new Storage("Record") as Storage<BlockValue>
+  BlockStorage = new Storage("Block") as Storage<BlockValue>
+  BlockRegistry = new Registry([]) as Registry<BlockValue>
 }
 
 export default new World()
