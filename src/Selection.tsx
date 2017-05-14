@@ -71,7 +71,7 @@ export default class Selection extends Component<{}> {
       const top = Math.min(mouse.start.y, mouse.end.y)
       const bottom = Math.max(mouse.start.y, mouse.end.y)
       const selected = blocks.filter(block => {
-        const { height, width, delta: { x, y } } = block.get()
+        const { height, width, origin: { x, y } } = block.get()
         const xAround = left < x && right > x
         const xInside = left > x && left < x + width
         const yAround = top < y && bottom > y

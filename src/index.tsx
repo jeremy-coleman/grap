@@ -18,23 +18,17 @@ async function main() {
     records.push(
       BlockRecord.create({
         id: uuid(),
-        down: false,
         height: 50,
         width: 50,
-        delta: {x: 0, y: 0},
-        start: null,
-        end: null,
+        origin: {x: 0, y: 0},
       })
     )
     records.push(
       BlockRecord.create({
         id: uuid(),
-        down: false,
         height: 50,
         width: 50,
-        delta: {x: 100, y: 0},
-        start: null,
-        end: null,
+        origin: {x: 100, y: 0},
       })
     )
   }

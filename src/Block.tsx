@@ -7,6 +7,7 @@ import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
 import Record, { RecordValue } from "./Record"
 import World from "./World"
+import Draggable, { DraggableStore } from "./Draggable"
 
 interface Point {
   x: number
@@ -19,79 +20,29 @@ interface BlockProps {
 
 export default class Block extends Component<BlockProps> {
 
-  componentWillUnmount() {
-    this.stopListeners()
-  }
-
-  startListeners() {
-    window.addEventListener("mousemove", this.handleMouseMove)
-    window.addEventListener("mouseup", this.handleMouseUp)
-  }
-
-  stopListeners() {
-    window.removeEventListener("mousemove", this.handleMouseMove)
-    window.removeEventListener("mouseup", this.handleMouseUp)
-  }
-
-  handleMouseDown = (e: React.MouseEvent<Element>) => {
-    const point = {
-      x: e.pageX,
-      y: e.pageY,
+  computeOrigin(store: DraggableStore): Point {
+    const { down, start, end } = store
+    const { origin } = this.props.record.get()
+    if (down) {
+      return {
+        x: Math.round((origin.x + (end.x - start.x)) / 10) * 10,
+        y: Math.round((origin.y + (end.y - start.y)) / 10) * 10,
+      }
+    } else {
+      return origin
     }
+  }
+
+  handleDragEnd = (store: DraggableStore) => {
     const record = this.props.record.get()
     this.props.record.set({
       ...record,
-      down: true,
-      start: point,
-      end: point,
+      origin: this.computeOrigin(store)
     })
-    this.startListeners()
-    e.stopPropagation()
-    e.preventDefault()
   }
 
-  handleMouseMove = (e: MouseEvent) => {
-    const record = this.props.record.get()
-    if (record.down) {
-      const point = {
-        x: e.pageX,
-        y: e.pageY,
-      }
-      this.props.record.set({
-        ...record,
-        end: point,
-      })
-    }
-  }
-
-  handleMouseUp = (e: MouseEvent) => {
-    const record = this.props.record.get()
-    if (record.down) {
-      this.props.record.set({
-        ...record,
-        down: false,
-        start: null,
-        end: null,
-        delta: this.computeDelta()
-      })
-      this.stopListeners()
-    }
-  }
-
-  computeDelta(): Point {
-    const { down, delta, start, end } = this.props.record.get()
-    if (down) {
-      return {
-        x: Math.round((delta.x + (end.x - start.x)) / 10) * 10,
-        y: Math.round((delta.y + (end.y - start.y)) / 10) * 10,
-      }
-    } else {
-      return delta
-    }
-  }
-
-  getStyle(): React.CSSProperties {
-    const delta = this.computeDelta()
+  getStyle(store: DraggableStore): React.CSSProperties {
+    const origin = this.computeOrigin(store)
     const { height, width } = this.props.record.get()
     const selected = World.SelectionStore.isSelected(this.props.record)
     return {
@@ -101,16 +52,21 @@ export default class Block extends Component<BlockProps> {
       borderRadius: 3,
       backgroundColor: "#333333",
       position: "absolute",
-      transform: `translate3d(${delta.x}px,${delta.y}px, 0)`,
+      transform: `translate3d(${origin.x}px,${origin.y}px, 0)`,
       boxSizing: "border-box",
     }
   }
 
   view() {
     return (
-      <div
-        style={this.getStyle()}
-        onMouseDown={this.handleMouseDown}
+      <Draggable
+        onDragEnd={this.handleDragEnd}
+        view={(store, handlers) =>
+          <div
+            style={this.getStyle(store)}
+            {...handlers}
+          />
+        }
       />
     )
   }
@@ -118,14 +74,9 @@ export default class Block extends Component<BlockProps> {
 
 export interface BlockValue {
   id: string
-  delta: Point // rename to origin
+  origin: Point // rename to origin
   height: number
   width: number
-
-  // these should be abstracted elsewhere
-  down: boolean
-  start?: Point
-  end?: Point
 }
 
 export class BlockRecord extends Record<BlockValue> {
