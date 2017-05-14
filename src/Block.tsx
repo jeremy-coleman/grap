@@ -49,9 +49,7 @@ export default class Block extends Component<BlockProps> {
       World.SelectionStore.set([this.props.record])
     } else {
       World.SelectionStore.get().forEach(record => {
-        const properties = record.get()
-        record.set({
-          ...properties,
+        record.assign({
           origin: Block.computeOrigin(record, store)
         })
       })

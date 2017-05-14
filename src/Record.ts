@@ -40,4 +40,9 @@ export default class Record<Kind extends RecordValue> {
     Record.save(value, this.storage)
   }
 
+  assign(value: Partial<Kind>) {
+    this.value.assign(value)
+    Record.save(this.value.get(), this.storage)
+  }
+
 }
