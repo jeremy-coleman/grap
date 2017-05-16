@@ -100,16 +100,6 @@ export default class Selection extends Component<{}> {
   }
 
   getContainerStyle(): React.CSSProperties {
-    return {
-      position: "absolute",
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-    }
-  }
-
-  getPerspectiveStyle(): React.CSSProperties {
     const { x, y, zoom } = World.PerspectiveStore.get()
     return {
       position: "absolute",
@@ -118,7 +108,6 @@ export default class Selection extends Component<{}> {
       right: 0,
       bottom: 0,
       transform: `translate3d(${x}px, ${y}px, 0px) scale(${zoom})`
-
     }
   }
 
@@ -155,9 +144,7 @@ export default class Selection extends Component<{}> {
             style={this.getContainerStyle()}
           >
             {this.viewSelection(store)}
-            <div style={this.getPerspectiveStyle()}>
-              {this.props.children}
-            </div>
+            {this.props.children}
           </div>
         }
       />

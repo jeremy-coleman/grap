@@ -22,7 +22,7 @@ export default class Perspective extends Component<PerspectiveProps> {
 
   static padding = 50
   static speed = 10
-  static delay = 500
+  static delay = 800
 
   static perspectiveStore(): Value<PerspectiveStore> {
     return new Value({
