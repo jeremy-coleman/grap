@@ -19,6 +19,11 @@ examples
 todo
 - build a graph editor
   - zoom and move around the surface
+    - zoom in and out
+    - scroll left and right
+    - dragging autoscroll
+    - tab through selection
+    - block layer height
     - tests
       - grab and drag at the edges
       - scroll to move around
