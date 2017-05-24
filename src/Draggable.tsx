@@ -12,38 +12,28 @@ interface DraggableHandlers {
 }
 
 interface DraggableProps {
-  draggableStore?: Value<DraggableStore>
-  onDragStart?: (store: DraggableStore) => void
-  onDragMove?: (store: DraggableStore) => void
-  onDragEnd?: (store: DraggableStore) => void
-  view: (store: DraggableStore, handlers: DraggableHandlers) => JSX.Element
+  draggableStore?: DraggableStore
+  onDragStart?: (store: DraggableState) => void
+  onDragMove?: (store: DraggableState) => void
+  onDragEnd?: (store: DraggableState) => void
+  view: (store: DraggableState, handlers: DraggableHandlers) => JSX.Element
 }
 
-export interface DraggableStore {
+export interface DraggableState {
   down: boolean
   start?: Point
   end?: Point
 }
 
+export class DraggableStore extends Value<DraggableState> {
+  constructor() {
+    super({down: false, start: null, end: null})
+  }
+}
+
 export default class Draggable extends Component<DraggableProps> {
 
-  static store(): Value<DraggableStore> {
-    return new Value({
-      down: false,
-      start: null,
-      end: null,
-    })
-  }
-
-  store: Value<DraggableStore>
-  constructor(props: DraggableProps) {
-    super(props)
-    if (props.draggableStore) {
-      this.store = props.draggableStore
-    } else {
-      this.store = Draggable.store()
-    }
-  }
+  store: DraggableStore = this.props.draggableStore || new DraggableStore()
 
   willUnmount() {
     this.stopListeners()

@@ -16,7 +16,7 @@ export default class Toolbox extends Component<ToolboxProps> {
       width: 50,
       origin: {x: 0, y: 0},
     })
-    World.SelectionStore.set([record])
+    World.CanvasStore.selectedBlocks.set([record])
   }
 
   getStyle(): React.CSSProperties {
