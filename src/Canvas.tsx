@@ -134,7 +134,7 @@ export default class Canvas extends Component<CanvasProps> {
       top: 0,
       right: 0,
       bottom: 0,
-      overflow: "scroll",
+      overflow: "hidden",
     }
   }
 
@@ -176,11 +176,66 @@ export default class Canvas extends Component<CanvasProps> {
         zoom: state.zoom / 1.1
       }))
     }
+    const step = 10
+    if (e.keyCode === keycode("left")) {
+      World.CanvasStore.perspective.update(state => ({
+        ...state,
+        x: state.x + (step / state.zoom)
+      }))
+    }
+    if (e.keyCode === keycode("right")) {
+      World.CanvasStore.perspective.update(state => ({
+        ...state,
+        x: state.x - (step / state.zoom)
+      }))
+    }
+    if (e.keyCode === keycode("up")) {
+      World.CanvasStore.perspective.update(state => ({
+        ...state,
+        y: state.y + (step / state.zoom)
+      }))
+    }
+    if (e.keyCode === keycode("down")) {
+      World.CanvasStore.perspective.update(state => ({
+        ...state,
+        y: state.y - (step / state.zoom)
+      }))
+    }
   }
 
   private root: Element
   ref = (node) => {
     this.root = node
+  }
+
+
+  getXAxisStyle(): React.CSSProperties {
+    return {
+      position: "absolute",
+      top: "calc(50% - 1px)",
+      left: 0,
+      right: 0,
+      border: "2px solid white",
+    }
+  }
+
+  getYAxisStyle(): React.CSSProperties {
+    return {
+      position: "absolute",
+      top: 0,
+      left: "calc(50% - 1px)",
+      bottom: 0,
+      border: "2px solid white",
+    }
+  }
+
+  viewGrid() {
+    return (
+      <div>
+        <div style={this.getXAxisStyle()}/>
+        <div style={this.getYAxisStyle()}/>
+      </div>
+    )
   }
 
   view() {
@@ -201,6 +256,7 @@ export default class Canvas extends Component<CanvasProps> {
               style={this.getPerspectiveStyle()}
             >
               {this.viewSelection(store)}
+              {this.viewGrid()}
               {blockRecords.map(record =>
                 <Block record={record} key={record.id}/>
               )}
