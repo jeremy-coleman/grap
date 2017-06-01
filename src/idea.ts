@@ -18,19 +18,20 @@ examples
 
 todo
 - build a graph editor
-
+  - better perspective
+    - view grid
+    - view origin
+    - view zoom and offset stats
+    - zoom to fit
+    - zoom / scroll boundaries
+  - better ux
+    - block dragging autoscroll
+    - tab through selection
+    - drag new block onto surface
+    - hold cmd to snap to grid
+    - control block layer height
   - connect lines between blocks
   - group blocks to create recursive drawings
-  - dragging autoscroll
-  - view grid
-  - view origin
-  - view zoom and offset stats
-  - zoom to fit
-  - zoom / scroll boundaries
-  - tab through selection
-  - block layer height
-  - new block goes in the middle
-  - hold cmd to snap to grid
 
 - persist everything immutably
 - make it do some simple math
