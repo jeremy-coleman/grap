@@ -1,18 +1,10 @@
-// A `Block` is a component that renders a `BlockRecord` which is a reactive
-// object that holds a `BlockValue`, and persists it to BlockStorage and
-// registers itself with a `BlockRegistry`.
-
 import * as React from 'react'
 import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
 import Record, { RecordValue } from "./Record"
 import World from "./World"
 import Draggable, { DraggableState } from "./Draggable"
-
-interface Point {
-  x: number
-  y: number
-}
+import { Point } from "./utils"
 
 interface BlockProps {
   record: BlockRecord
@@ -20,6 +12,8 @@ interface BlockProps {
 
 export default class Block extends Component<BlockProps> {
 
+  // Compute the origin of the block. If the block is selected, account
+  // for dragging it as well.
   static computeOrigin(record: BlockRecord, store: DraggableState): Point {
     const selected = World.CanvasStore.blockIsSelected(record)
     const { down, start, end } = store
@@ -34,16 +28,21 @@ export default class Block extends Component<BlockProps> {
     }
   }
 
+  // If the block is not selected when we start dragging it, then it
+  // should be the only selected block.
   handleDragStart = (store: DraggableState) => {
     if (!World.CanvasStore.blockIsSelected(this.props.record)) {
       World.CanvasStore.selectedBlocks.set([this.props.record])
     }
   }
 
+  // If a drag ends without moving, its essentially a click
   didntMove(store: DraggableState) {
     return store.start.x === store.end.x && store.start.y === store.end.y
   }
 
+  // If we clicked a block, then select it, otherwise, update the positions
+  // of all selected blocks.
   handleDragEnd = (store: DraggableState) => {
     if (this.didntMove(store)) {
       World.CanvasStore.selectedBlocks.set([this.props.record])
@@ -93,11 +92,13 @@ export default class Block extends Component<BlockProps> {
 
 export interface BlockValue {
   id: string
-  origin: Point // rename to origin
+  origin: Point
   height: number
   width: number
 }
 
+// A BlockRecord is persisted to localStorage and when a block is created,
+// it registers itself with the BlockRegistry.
 export class BlockRecord extends Record<BlockValue> {
 
   static create(value: BlockValue) {

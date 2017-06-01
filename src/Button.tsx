@@ -2,9 +2,7 @@ import * as React from 'react'
 import Component from 'reactive-magic/component'
 import World from "./World"
 
-interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {
-
-}
+interface ButtonProps extends React.HTMLProps<HTMLButtonElement> { }
 
 export default class Button extends Component<ButtonProps> {
 

@@ -1,11 +1,7 @@
 import * as React from 'react'
 import { Value } from 'reactive-magic'
 import Component from 'reactive-magic/component'
-
-interface Point {
-  x: number
-  y: number
-}
+import { Point } from "./utils"
 
 interface DraggableHandlers {
   onMouseDown: (e: React.MouseEvent<Element>) => void

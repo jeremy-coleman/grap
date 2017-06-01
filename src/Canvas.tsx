@@ -6,21 +6,19 @@ import keycode from "keycode"
 import Block, { BlockRecord } from "./Block"
 import World from "./World"
 import Draggable, { DraggableStore, DraggableState } from "./Draggable"
+import { Point } from "./utils"
 
 // TODO
 // - view grid
 // - view origin
 // - view zoom and offset stats
+// - zoom to fix
+// - zoom / scroll boundaries
 
 interface Perspective {
   x: number
   y: number
   zoom: number
-}
-
-interface Point {
-  x: number
-  y: number
 }
 
 export class CanvasStore {

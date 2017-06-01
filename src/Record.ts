@@ -9,7 +9,10 @@ export interface RecordValue {
 
 export default class Record<Kind extends RecordValue> {
 
-  static create<Kind extends RecordValue>(value: Kind, storage: Storage<Kind>, registry: Registry<Kind>) {
+  static create<Kind extends RecordValue>(
+    value: Kind, storage: Storage<Kind>,
+    registry: Registry<Kind>
+  ) {
     const record = new Record(value, storage, registry)
     Record.save(value, storage)
     return record
