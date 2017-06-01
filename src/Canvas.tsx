@@ -8,13 +8,6 @@ import World from "./World"
 import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 import { Point } from "./utils"
 
-// TODO
-// - view grid
-// - view origin
-// - view zoom and offset stats
-// - zoom to fix
-// - zoom / scroll boundaries
-
 interface Perspective {
   x: number
   y: number
@@ -43,6 +36,29 @@ export class CanvasStore {
 
 }
 
+// Transform a point on the screen (from Draggable) to a point within a
+// rect, accounting for the perspective.
+function transformPoint(point: Point, rect: ClientRect) {
+  // normalize x and y from [-0.5,0.5] with 0 at the center
+  const {top, left, width, height} = rect
+  const centered = {
+    x: (point.x - left) / width - 0.5,
+    y: (point.y - top) / height - 0.5,
+  }
+  // zoom in at the center of the screen
+  const {x, y, zoom} = World.CanvasStore.perspective.get()
+  const stretched = {
+    x: centered.x / zoom,
+    y: centered.y / zoom,
+  }
+  // map [-0.5,0.5] to [0,width] and [0,height]
+  const cropped = {
+    x: (stretched.x + 0.5) * width - x,
+    y: (stretched.y + 0.5) * height - y,
+  }
+  return cropped
+}
+
 interface CanvasProps {}
 
 export default class Canvas extends Component<CanvasProps> {
@@ -56,6 +72,10 @@ export default class Canvas extends Component<CanvasProps> {
     bottom: 0,
   })
 
+  willMount() {
+    window.addEventListener("keydown", this.handleKeyDown)
+  }
+
   didMount() {
     this.rect.set(this.root.getBoundingClientRect())
     window.addEventListener("resize", this.onResize)
@@ -63,49 +83,23 @@ export default class Canvas extends Component<CanvasProps> {
 
   willUnmount() {
     window.removeEventListener("resize", this.onResize)
+    window.removeEventListener("keydown", this.handleKeyDown)
   }
 
   onResize = e => {
     this.rect.set(this.root.getBoundingClientRect())
   }
 
-  transformPoint(point: Point) {
-    // normalize x and y from [-0.5,0.5] with 0 at the center
-    const {top, left, width, height} = this.rect.get()
-    const centered = {
-      x: (point.x - left) / width - 0.5,
-      y: (point.y - top) / height - 0.5,
-    }
-    // zoom in at the center of the screen
-    const {x, y, zoom} = World.CanvasStore.perspective.get()
-    const stretched = {
-      x: centered.x / zoom,
-      y: centered.y / zoom,
-    }
-    // map [-0.5,0.5] to [0,width] and [0,height]
-    const cropped = {
-      x: (stretched.x + 0.5) * width,
-      y: (stretched.y + 0.5) * height,
-    }
-    return cropped
-  }
-
-  accountForPerspective(store: DraggableState): DraggableState {
-    return {
-      ...store,
-      start: this.transformPoint(store.start),
-      end: this.transformPoint(store.end),
-    }
-  }
-
   updateSelection = (store: DraggableState) => {
-    store = this.accountForPerspective(store)
+    const rect = this.rect.get()
+    const start = transformPoint(store.start, rect)
+    const end = transformPoint(store.end, rect)
     if (store.down) {
       const blocks = World.BlockRegistry.get()
-      const left = Math.min(store.start.x, store.end.x)
-      const right = Math.max(store.start.x, store.end.x)
-      const top = Math.min(store.start.y, store.end.y)
-      const bottom = Math.max(store.start.y, store.end.y)
+      const left = Math.min(start.x, end.x)
+      const right = Math.max(start.x, end.x)
+      const top = Math.min(start.y, end.y)
+      const bottom = Math.max(start.y, end.y)
       const selected = blocks.filter(block => {
         const { height, width, origin: { x, y } } = block.get()
         const xAround = left < x && right > x
@@ -118,67 +112,35 @@ export default class Canvas extends Component<CanvasProps> {
     }
   }
 
-  getSelectionStyle(store: DraggableState): React.CSSProperties {
-    store = this.accountForPerspective(store)
+  getSelectionBoxStyle(store: DraggableState): React.CSSProperties {
+    const rect = this.rect.get()
+    const start = transformPoint(store.start, rect)
+    const end = transformPoint(store.end, rect)
     return {
-      width: Math.abs(store.start.x - store.end.x),
-      height: Math.abs(store.start.y - store.end.y),
+      width: Math.abs(start.x - end.x),
+      height: Math.abs(start.y - end.y),
       border: "1px solid blue",
       borderRadius: 3,
       backgroundColor: World.Theme.primary.get(),
       opacity: 0.1,
       position: "absolute",
       transform: `translate3d(${
-        Math.min(store.start.x, store.end.x)
+        Math.min(start.x, end.x)
       }px,${
-        Math.min(store.start.y, store.end.y)
+        Math.min(start.y, end.y)
       }px, 0)`,
       boxSizing: "border-box",
     }
   }
 
-  viewSelection(store: DraggableState) {
-    if (!store.down || !this.rect.get()) {
+  viewSelectionBox(store: DraggableState) {
+    if (!store.down) {
       return null
     } else {
       return (
-        <div style={this.getSelectionStyle(store)}/>
+        <div style={this.getSelectionBoxStyle(store)}/>
       )
     }
-  }
-
-  getContainerStyle(): React.CSSProperties {
-    return {
-      position: "absolute",
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-      overflow: "hidden",
-    }
-  }
-
-  getPerspectiveStyle(): React.CSSProperties {
-    const {x, y, zoom} = World.CanvasStore.perspective.get()
-    const { width, height} = this.rect.get()
-    return {
-      position: "absolute",
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
-      // we always want to be zooming into the center of the viewport
-      transformOrigin: `${width / 2 - x}px ${height / 2 - y}px`,
-      transform: `translate3d(${x}px, ${y}px, 0px) scale(${zoom})`,
-    }
-  }
-
-  willMount() {
-    window.addEventListener("keydown", this.handleKeyDown)
-  }
-
-  willUnount() {
-    window.removeEventListener("keydown", this.handleKeyDown)
   }
 
   handleKeyDown = (e: KeyboardEvent) => {
@@ -231,6 +193,32 @@ export default class Canvas extends Component<CanvasProps> {
     this.root = node
   }
 
+
+  getContainerStyle(): React.CSSProperties {
+    return {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      overflow: "hidden",
+    }
+  }
+
+  getPerspectiveStyle(): React.CSSProperties {
+    const { x, y, zoom } = World.CanvasStore.perspective.get()
+    const { width, height} = this.rect.get()
+    return {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      // we always want to be zooming into the center of the viewport
+      transformOrigin: `${width / 2 - x}px ${height / 2 - y}px`,
+      transform: `translate3d(${x}px, ${y}px, 0px) scale(${zoom})`,
+    }
+  }
 
   getXAxisStyle(): React.CSSProperties {
     return {
@@ -313,7 +301,7 @@ export default class Canvas extends Component<CanvasProps> {
               className="perspective"
               style={this.getPerspectiveStyle()}
             >
-              {this.viewSelection(store)}
+              {this.viewSelectionBox(store)}
               {this.viewGrid()}
               {blockRecords.map(record =>
                 <Block record={record} key={record.id}/>

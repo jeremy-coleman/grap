@@ -19,8 +19,18 @@ examples
 todo
 - build a graph editor
   - zoom and move around the surface
-    - zoom in and out
-    - scroll left and right
+
+    - translate selection box is off
+    - zoom drag is off
+    - selection top left is janky
+    - zoom / scroll boundaries
+
+    - view grid
+    - view origin
+    - view zoom and offset stats
+    - zoom to fit
+
+
     - dragging autoscroll
     - tab through selection
     - block layer height
