@@ -18,33 +18,20 @@ examples
 
 todo
 - build a graph editor
-  - zoom and move around the surface
 
-    - zoom / scroll boundaries
-
-    - view grid
-    - view origin
-    - view zoom and offset stats
-    - zoom to fit
-
-
-    - dragging autoscroll
-    - tab through selection
-    - block layer height
-    - tests
-      - grab and drag at the edges
-      - scroll to move around
-      - cmd scroll to zoom in and out
-      - drag select should work anywhere
-      - drag select should scroll at the edges
-    - the blocks and the selection need to be on the same surface
-    - drag-select should use window mousedow  ns and compute if its in the rect
-    - dragstart caches the perspective and computes the diff to get the new position
-  - new block goes in the middle
-  - hold cmd to snap to grid
-  - tab to toggle zoomed-out perspective
   - connect lines between blocks
   - group blocks to create recursive drawings
+  - dragging autoscroll
+  - view grid
+  - view origin
+  - view zoom and offset stats
+  - zoom to fit
+  - zoom / scroll boundaries
+  - tab through selection
+  - block layer height
+  - new block goes in the middle
+  - hold cmd to snap to grid
+
 - persist everything immutably
 - make it do some simple math
 
