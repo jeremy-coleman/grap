@@ -10,6 +10,8 @@ interface BlockProps {
   record: BlockRecord
 }
 
+const snapSize = 1
+
 export default class Block extends Component<BlockProps> {
 
   // Compute the origin of the block. If the block is selected, account
@@ -22,8 +24,8 @@ export default class Block extends Component<BlockProps> {
       const start = World.CanvasStore.transformPoint(store.start)
       const end = World.CanvasStore.transformPoint(store.end)
       return {
-        x: Math.round((origin.x + (end.x - start.x)) / 10) * 10,
-        y: Math.round((origin.y + (end.y - start.y)) / 10) * 10,
+        x: Math.round((origin.x + (end.x - start.x)) / snapSize) * snapSize,
+        y: Math.round((origin.y + (end.y - start.y)) / snapSize) * snapSize,
       }
     } else {
       return origin

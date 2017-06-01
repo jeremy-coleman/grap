@@ -20,7 +20,6 @@ todo
 - build a graph editor
   - zoom and move around the surface
 
-    - selection top left is janky
     - zoom / scroll boundaries
 
     - view grid

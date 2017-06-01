@@ -115,6 +115,10 @@ export default class Canvas extends Component<CanvasProps> {
     const rect = World.CanvasStore.rect.get()
     const start = World.CanvasStore.transformPoint(store.start)
     const end = World.CanvasStore.transformPoint(store.end)
+    const flipY = end.x < start.x
+    const flipX = end.y < start.y
+    const rotateX = flipX ? "180deg" : "0"
+    const rotateY = flipY ? "180deg" : "0"
     return {
       width: Math.abs(start.x - end.x),
       height: Math.abs(start.y - end.y),
@@ -123,11 +127,8 @@ export default class Canvas extends Component<CanvasProps> {
       backgroundColor: World.Theme.primary.get(),
       opacity: 0.1,
       position: "absolute",
-      transform: `translate3d(${
-        Math.min(start.x, end.x)
-      }px,${
-        Math.min(start.y, end.y)
-      }px, 0)`,
+      transformOrigin: "top left",
+      transform: `translate3d(${start.x}px,${start.y}px,0) rotateX(${rotateX}) rotateY(${rotateY})`,
       boxSizing: "border-box",
     }
   }
