@@ -34,35 +34,6 @@ export class CanvasStore {
     zoom: 1,
   })
 
-}
-
-// Transform a point on the screen (from Draggable) to a point within a
-// rect, accounting for the perspective.
-function transformPoint(point: Point, rect: ClientRect) {
-  // normalize x and y from [-0.5,0.5] with 0 at the center
-  const {top, left, width, height} = rect
-  const centered = {
-    x: (point.x - left) / width - 0.5,
-    y: (point.y - top) / height - 0.5,
-  }
-  // zoom in at the center of the screen
-  const {x, y, zoom} = World.CanvasStore.perspective.get()
-  const stretched = {
-    x: centered.x / zoom,
-    y: centered.y / zoom,
-  }
-  // map [-0.5,0.5] to [0,width] and [0,height]
-  const cropped = {
-    x: (stretched.x + 0.5) * width - x,
-    y: (stretched.y + 0.5) * height - y,
-  }
-  return cropped
-}
-
-interface CanvasProps {}
-
-export default class Canvas extends Component<CanvasProps> {
-
   rect: Value<ClientRect> = new Value({
     width: 0,
     height: 0,
@@ -72,12 +43,40 @@ export default class Canvas extends Component<CanvasProps> {
     bottom: 0,
   })
 
+  // Transform a point on the screen (from Draggable) to a point within a
+  // rect, accounting for the perspective.
+  transformPoint(point: Point): Point {
+    // normalize x and y from [-0.5,0.5] with 0 at the center
+    const {top, left, width, height} = this.rect.get()
+    const centered = {
+      x: (point.x - left) / width - 0.5,
+      y: (point.y - top) / height - 0.5,
+    }
+    // zoom in at the center of the screen
+    const {x, y, zoom} = World.CanvasStore.perspective.get()
+    const stretched = {
+      x: centered.x / zoom,
+      y: centered.y / zoom,
+    }
+    // map [-0.5,0.5] to [0,width] and [0,height]
+    const cropped = {
+      x: (stretched.x + 0.5) * width - x,
+      y: (stretched.y + 0.5) * height - y,
+    }
+    return cropped
+  }
+}
+
+interface CanvasProps {}
+
+export default class Canvas extends Component<CanvasProps> {
+
   willMount() {
     window.addEventListener("keydown", this.handleKeyDown)
   }
 
   didMount() {
-    this.rect.set(this.root.getBoundingClientRect())
+    World.CanvasStore.rect.set(this.root.getBoundingClientRect())
     window.addEventListener("resize", this.onResize)
   }
 
@@ -87,13 +86,13 @@ export default class Canvas extends Component<CanvasProps> {
   }
 
   onResize = e => {
-    this.rect.set(this.root.getBoundingClientRect())
+    World.CanvasStore.rect.set(this.root.getBoundingClientRect())
   }
 
   updateSelection = (store: DraggableState) => {
-    const rect = this.rect.get()
-    const start = transformPoint(store.start, rect)
-    const end = transformPoint(store.end, rect)
+    const rect = World.CanvasStore.rect.get()
+    const start = World.CanvasStore.transformPoint(store.start)
+    const end = World.CanvasStore.transformPoint(store.end)
     if (store.down) {
       const blocks = World.BlockRegistry.get()
       const left = Math.min(start.x, end.x)
@@ -113,9 +112,9 @@ export default class Canvas extends Component<CanvasProps> {
   }
 
   getSelectionBoxStyle(store: DraggableState): React.CSSProperties {
-    const rect = this.rect.get()
-    const start = transformPoint(store.start, rect)
-    const end = transformPoint(store.end, rect)
+    const rect = World.CanvasStore.rect.get()
+    const start = World.CanvasStore.transformPoint(store.start)
+    const end = World.CanvasStore.transformPoint(store.end)
     return {
       width: Math.abs(start.x - end.x),
       height: Math.abs(start.y - end.y),
@@ -207,7 +206,7 @@ export default class Canvas extends Component<CanvasProps> {
 
   getPerspectiveStyle(): React.CSSProperties {
     const { x, y, zoom } = World.CanvasStore.perspective.get()
-    const { width, height} = this.rect.get()
+    const { width, height} = World.CanvasStore.rect.get()
     return {
       position: "absolute",
       left: 0,
@@ -242,7 +241,7 @@ export default class Canvas extends Component<CanvasProps> {
 
   getOriginStyle(): React.CSSProperties {
     const {x, y, zoom} = World.CanvasStore.perspective.get()
-    const { width, height} = this.rect.get()
+    const { width, height} = World.CanvasStore.rect.get()
     return {
       position: "absolute",
       top: 0,

@@ -20,8 +20,6 @@ todo
 - build a graph editor
   - zoom and move around the surface
 
-    - translate selection box is off
-    - zoom drag is off
     - selection top left is janky
     - zoom / scroll boundaries
 

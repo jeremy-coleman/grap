@@ -16,9 +16,11 @@ export default class Block extends Component<BlockProps> {
   // for dragging it as well.
   static computeOrigin(record: BlockRecord, store: DraggableState): Point {
     const selected = World.CanvasStore.blockIsSelected(record)
-    const { down, start, end } = store
+    const { down } = store
     const { origin } = record.get()
     if (selected && down) {
+      const start = World.CanvasStore.transformPoint(store.start)
+      const end = World.CanvasStore.transformPoint(store.end)
       return {
         x: Math.round((origin.x + (end.x - start.x)) / 10) * 10,
         y: Math.round((origin.y + (end.y - start.y)) / 10) * 10,
