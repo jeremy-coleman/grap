@@ -7,6 +7,11 @@ import Block, { BlockRecord } from "./Block"
 import World from "./World"
 import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 
+// TODO
+// - view grid
+// - view origin
+// - view zoom and offset stats
+
 interface Perspective {
   x: number
   y: number
@@ -44,8 +49,25 @@ interface CanvasProps {}
 
 export default class Canvas extends Component<CanvasProps> {
 
-  rect: Value<ClientRect> = new Value(null)
+  rect: Value<ClientRect> = new Value({
+    width: 0,
+    height: 0,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  })
+
   didMount() {
+    this.rect.set(this.root.getBoundingClientRect())
+    window.addEventListener("resize", this.onResize)
+  }
+
+  willUnmount() {
+    window.removeEventListener("resize", this.onResize)
+  }
+
+  onResize = e => {
     this.rect.set(this.root.getBoundingClientRect())
   }
 
@@ -140,12 +162,15 @@ export default class Canvas extends Component<CanvasProps> {
 
   getPerspectiveStyle(): React.CSSProperties {
     const {x, y, zoom} = World.CanvasStore.perspective.get()
+    const { width, height} = this.rect.get()
     return {
       position: "absolute",
       left: 0,
       top: 0,
       right: 0,
       bottom: 0,
+      // we always want to be zooming into the center of the viewport
+      transformOrigin: `${width / 2 - x}px ${height / 2 - y}px`,
       transform: `translate3d(${x}px, ${y}px, 0px) scale(${zoom})`,
     }
   }
@@ -229,11 +254,45 @@ export default class Canvas extends Component<CanvasProps> {
     }
   }
 
+  getOriginStyle(): React.CSSProperties {
+    const {x, y, zoom} = World.CanvasStore.perspective.get()
+    const { width, height} = this.rect.get()
+    return {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      transform: `translate3d(${width / 2 - x}px, ${height / 2 - y}px, 0px)`,
+      height: 2,
+      width: 2,
+      backgroundColor: "red",
+    }
+  }
+
+  getCanvasStyle(): React.CSSProperties {
+    return {
+      position: "absolute",
+      height: "100%",
+      width: "100%",
+    }
+  }
+
+  onWheel = (e) => {
+    e.preventDefault()
+    const speed = 0.1
+    World.CanvasStore.perspective.update(state => ({
+      ...state,
+      x: state.x - (speed * e.deltaX / state.zoom),
+      y: state.y - (speed * e.deltaY / state.zoom),
+      zoom: e.ctrlKey ? state.zoom * Math.exp(-e.deltaY / 100) : state.zoom,
+    }))
+  }
+
   viewGrid() {
     return (
       <div>
         <div style={this.getXAxisStyle()}/>
         <div style={this.getYAxisStyle()}/>
+        <div style={this.getOriginStyle()}/>
       </div>
     )
   }
@@ -250,6 +309,7 @@ export default class Canvas extends Component<CanvasProps> {
             {...handlers}
             ref={this.ref}
             style={this.getContainerStyle()}
+            onWheel={this.onWheel}
           >
             <div
               className="perspective"

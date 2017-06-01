@@ -17,7 +17,7 @@
     "keycode": "^2.1.9",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "reactive-magic": "^1.5.0",
+    "reactive-magic": "^1.7.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
