@@ -19,8 +19,6 @@ examples
 todo
 - build a graph editor
   - better perspective
-    - view grid
-    - view origin
     - view zoom and offset stats
     - zoom to fit
     - zoom / scroll boundaries
