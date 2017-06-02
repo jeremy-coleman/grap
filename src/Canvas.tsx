@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Value } from 'reactive-magic'
+import { Value, DerivedValue } from 'reactive-magic'
 import Component from 'reactive-magic/component'
 import uuid from "uuid/v4"
 import keycode from "keycode"
@@ -35,12 +35,12 @@ export class CanvasStore {
   })
 
   rect: Value<ClientRect> = new Value({
-    width: 0,
-    height: 0,
+    width: 1,
+    height: 1,
     top: 0,
     left: 0,
-    right: 0,
-    bottom: 0,
+    right: 1,
+    bottom: 1,
   })
 
   // Transform a point on the screen (from Draggable) to a point within a
@@ -53,7 +53,7 @@ export class CanvasStore {
       y: (point.y - top) / height - 0.5,
     }
     // zoom in at the center of the screen
-    const {x, y, zoom} = World.CanvasStore.perspective.get()
+    const {x, y, zoom} = this.perspective.get()
     const stretched = {
       x: centered.x / zoom,
       y: centered.y / zoom,
@@ -65,6 +65,20 @@ export class CanvasStore {
     }
     return cropped
   }
+
+  viewport: DerivedValue<ClientRect> = new DerivedValue(() => {
+    const { top, left, bottom, right, width, height } = this.rect.get()
+    const topLeft = this.transformPoint({x: left, y: top})
+    const bottomRight = this.transformPoint({x: right, y: bottom})
+    return {
+      top: topLeft.y,
+      left: topLeft.x,
+      bottom: bottomRight.y,
+      right: bottomRight.x,
+      width: bottomRight.x - topLeft.x,
+      height: bottomRight.y - topLeft.y,
+    }
+  })
 }
 
 interface CanvasProps {}
@@ -220,40 +234,6 @@ export default class Canvas extends Component<CanvasProps> {
     }
   }
 
-  getXAxisStyle(): React.CSSProperties {
-    return {
-      position: "absolute",
-      top: "calc(50% - 1px)",
-      left: 0,
-      right: 0,
-      border: "2px solid white",
-    }
-  }
-
-  getYAxisStyle(): React.CSSProperties {
-    return {
-      position: "absolute",
-      top: 0,
-      left: "calc(50% - 1px)",
-      bottom: 0,
-      border: "2px solid white",
-    }
-  }
-
-  getOriginStyle(): React.CSSProperties {
-    const {x, y, zoom} = World.CanvasStore.perspective.get()
-    const { width, height} = World.CanvasStore.rect.get()
-    return {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      transform: `translate3d(${width / 2 - x}px, ${height / 2 - y}px, 0px)`,
-      height: 2,
-      width: 2,
-      backgroundColor: "red",
-    }
-  }
-
   getCanvasStyle(): React.CSSProperties {
     return {
       position: "absolute",
@@ -273,13 +253,113 @@ export default class Canvas extends Component<CanvasProps> {
     }))
   }
 
-  viewGrid() {
+
+  viewGridLines() {
+    const viewport = World.CanvasStore.viewport.get()
+    const { zoom } = World.CanvasStore.perspective.get()
+
+    // Between 5 and 20 lines at any zoom
+    const step = Math.pow(10, Math.round(Math.log10(viewport.width) - 1.0))
+
+    const vLines = Math.round(viewport.right / step) - Math.round(viewport.left / step) + 1
+
+    const vDivs = Array(vLines).fill(0).map((_, index) => {
+      const n = (Math.round(viewport.left / step) + index)
+      return (
+        <div
+          key={"v" + n}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: viewport.height,
+            borderWidth: 1 / zoom,
+            borderStyle: "solid",
+            borderColor: "white",
+            opacity: 0.2,
+            transform: `translate3d(${n * step}px,${viewport.top}px,0)`
+          }}
+        />
+      )
+    })
+
+    const hLines = Math.round(viewport.bottom / step) - Math.round(viewport.top / step) + 1
+
+    const hDivs = Array(hLines).fill(0).map((_, index) => {
+      const n = (Math.round(viewport.top / step) + index)
+      return (
+        <div
+          key={"h" + n}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: viewport.width,
+            borderWidth: 1 / zoom,
+            borderStyle: "solid",
+            borderColor: "white",
+            opacity: 0.2,
+            transform: `translate3d(${viewport.left}px,${n * step}px,0)`
+          }}
+        />
+      )
+    })
+
+    return [...vDivs, hDivs]
+  }
+
+  viewCanvasOrigin() {
+    const viewport = World.CanvasStore.viewport.get()
+    const { zoom } = World.CanvasStore.perspective.get()
+    const width = 1 / zoom
+    const edge = Math.min(viewport.height, viewport.width) / 2
     return (
       <div>
-        <div style={this.getXAxisStyle()}/>
-        <div style={this.getYAxisStyle()}/>
-        <div style={this.getOriginStyle()}/>
+        <div
+          style={{
+            position: "absolute",
+            top: `calc(50% - ${Math.max(1, width)}px)`,
+            left: `calc(50% - ${edge / 2}px)`,
+            width: edge,
+            borderWidth: width,
+            borderStyle: "solid",
+            borderColor: "white",
+            opacity: 0.2,
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: `calc(50% - ${edge / 2}px)`,
+            left: `calc(50% - ${Math.max(1, width)}px)`,
+            height: edge,
+            borderWidth: width,
+            borderStyle: "solid",
+            borderColor: "white",
+            opacity: 0.2,
+          }}
+        />
       </div>
+    )
+  }
+
+  viewCenterFocus() {
+    const {x, y, zoom} = World.CanvasStore.perspective.get()
+    const { width, height} = World.CanvasStore.rect.get()
+    const edge = Math.max(1, 8 / zoom)
+    return (
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          transform: `translate3d(${width / 2 - x - edge / 2}px, ${height / 2 - y - edge / 2}px, 0px)`,
+          borderRadius: edge,
+          height: edge,
+          width: edge,
+          backgroundColor: "red",
+        }}
+      />
     )
   }
 
@@ -302,7 +382,6 @@ export default class Canvas extends Component<CanvasProps> {
               style={this.getPerspectiveStyle()}
             >
               {this.viewSelectionBox(store)}
-              {this.viewGrid()}
               {blockRecords.map(record =>
                 <Block record={record} key={record.id}/>
               )}
