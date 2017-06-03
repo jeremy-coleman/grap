@@ -245,12 +245,26 @@ export default class Canvas extends Component<CanvasProps> {
   onWheel = (e) => {
     e.preventDefault()
     const speed = 0.1
-    World.CanvasStore.perspective.update(state => ({
-      ...state,
-      x: state.x - (speed * e.deltaX / state.zoom),
-      y: state.y - (speed * e.deltaY / state.zoom),
-      zoom: e.ctrlKey ? state.zoom * Math.exp(-e.deltaY / 100) : state.zoom,
-    }))
+    const {x, y, zoom} = World.CanvasStore.perspective.get()
+    if (e.ctrlKey) {
+      const { left, top, width, height} = World.CanvasStore.rect.get()
+      // Offset x and y to zoom in on the mouse location
+      const mouse = {
+        x: (e.clientX - left - width / 2) / zoom,
+        y: (e.clientY - top - height / 2) / zoom,
+      }
+      World.CanvasStore.perspective.set({
+        x: x - (speed * e.deltaX / zoom) + mouse.x * e.deltaY / 100,
+        y: y - (speed * e.deltaY / zoom) + mouse.y * e.deltaY / 100,
+        zoom: zoom * Math.exp(-e.deltaY / 100),
+      })
+    } else {
+      World.CanvasStore.perspective.set({
+        zoom,
+        x: x - (speed * e.deltaX / zoom),
+        y: y - (speed * e.deltaY / zoom),
+      })
+    }
   }
 
 
