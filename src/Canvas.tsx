@@ -7,6 +7,7 @@ import Block, { BlockRecord } from "./Block"
 import World from "./World"
 import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 import { Point } from "./utils"
+import ContextMenu from "./ContextMenu"
 
 interface Perspective {
   x: number
@@ -104,6 +105,7 @@ export default class Canvas extends Component<CanvasProps> {
   }
 
   updateSelection = (store: DraggableState) => {
+    World.ContextMenuStore.close()
     const rect = World.CanvasStore.rect.get()
     const start = World.CanvasStore.transformPoint(store.start)
     const end = World.CanvasStore.transformPoint(store.end)
@@ -242,8 +244,9 @@ export default class Canvas extends Component<CanvasProps> {
     }
   }
 
-  onWheel = (e) => {
+  handleWheel = (e) => {
     e.preventDefault()
+    World.ContextMenuStore.close()
     const speed = 0.1
     const {x, y, zoom} = World.CanvasStore.perspective.get()
     if (e.ctrlKey) {
@@ -267,6 +270,16 @@ export default class Canvas extends Component<CanvasProps> {
     }
   }
 
+  handleContextMenu = (e) => {
+    e.preventDefault()
+    World.ContextMenuStore.set({
+      open: true,
+      where: {
+        x: e.clientX,
+        y: e.clientY,
+      }
+    })
+  }
 
   viewGridLines() {
     const viewport = World.CanvasStore.viewport.get()
@@ -380,29 +393,34 @@ export default class Canvas extends Component<CanvasProps> {
   view() {
     const blockRecords = World.BlockRegistry.get()
     return (
-      <Draggable
-        onDragStart={this.updateSelection}
-        onDragMove={this.updateSelection}
-        view={(store, handlers) =>
-          <div
-            className="canvas"
-            {...handlers}
-            ref={this.ref}
-            style={this.getContainerStyle()}
-            onWheel={this.onWheel}
-          >
+      <div>
+        <Draggable
+          onDragStart={this.updateSelection}
+          onDragMove={this.updateSelection}
+          onDragEnd={this.updateSelection}
+          view={(store, handlers) =>
             <div
-              className="perspective"
-              style={this.getPerspectiveStyle()}
+              className="canvas"
+              {...handlers}
+              ref={this.ref}
+              style={this.getContainerStyle()}
+              onWheel={this.handleWheel}
+              onContextMenu={this.handleContextMenu}
             >
-              {this.viewSelectionBox(store)}
-              {blockRecords.map(record =>
-                <Block record={record} key={record.id}/>
-              )}
+              <div
+                className="perspective"
+                style={this.getPerspectiveStyle()}
+              >
+                {this.viewSelectionBox(store)}
+                {blockRecords.map(record =>
+                  <Block record={record} key={record.id}/>
+                )}
+              </div>
             </div>
-          </div>
-        }
-      />
+          }
+        />
+        <ContextMenu/>
+      </div>
     )
   }
 

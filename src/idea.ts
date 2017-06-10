@@ -20,18 +20,21 @@ todo
 - build a graph editor
   - better perspective
     - view zoom and offset stats
-    - zoom to fit
-    - zoom / scroll boundaries
   - better ux
+    - right-click to delete as well
     - block dragging autoscroll
-    - tab through selection
-    - drag new block onto surface
-    - hold cmd to snap to grid
-    - control block layer height
   - connect lines between blocks
   - group blocks to create recursive drawings
+  - copy paste blocks
 
 - persist everything immutably
 - make it do some simple math
+
+
+- later
+  - hold cmd to snap to grid
+  - control block layer height
+  - zoom to fit
+  - zoom / scroll boundaries
 
 */

@@ -35,6 +35,7 @@ export default class Block extends Component<BlockProps> {
   // If the block is not selected when we start dragging it, then it
   // should be the only selected block.
   handleDragStart = (store: DraggableState) => {
+    World.ContextMenuStore.close()
     if (!World.CanvasStore.blockIsSelected(this.props.record)) {
       World.CanvasStore.selectedBlocks.set([this.props.record])
     }
@@ -104,12 +105,6 @@ export interface BlockValue {
 // A BlockRecord is persisted to localStorage and when a block is created,
 // it registers itself with the BlockRegistry.
 export class BlockRecord extends Record<BlockValue> {
-
-  static create(value: BlockValue) {
-    const record = new BlockRecord(value)
-    Record.save(value, World.BlockStorage)
-    return record
-  }
 
   static async load(): Promise<Array<BlockRecord>> {
     const blocks = await World.BlockStorage.getAll()

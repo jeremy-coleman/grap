@@ -6,7 +6,6 @@ import uuid from "uuid/v4"
 
 interface LayoutProps {
   canvas: JSX.Element
-  toolbox: JSX.Element
 }
 
 export default class Layout extends Component<LayoutProps> {
@@ -44,7 +43,6 @@ export default class Layout extends Component<LayoutProps> {
     return (
       <div style={this.getContainerStyle()}>
         <div style={this.getCanvasStyle()}>{props.canvas}</div>
-        <div style={this.getToolboxStyle()}>{props.toolbox}</div>
       </div>
     )
   }

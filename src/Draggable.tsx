@@ -46,6 +46,10 @@ export default class Draggable extends Component<DraggableProps> {
   }
 
   handleMouseDown = (e: React.MouseEvent<Element>) => {
+    // Only respond to left-clicks
+    if (e.button !== 0) {
+      return
+    }
     const point = {
       x: e.pageX,
       y: e.pageY,

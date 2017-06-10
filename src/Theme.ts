@@ -27,6 +27,7 @@ const orange2 = "hsl(39, 67%, 69%)"
 
 const fg = mono1
 const bg = `hsl(${hue}, ${sat}%, ${light}%)`
+const menu = `hsl(${hue}, ${sat}%, ${light / 0.86}%)`
 const gutter = `hsl(${hue}, ${sat}%, ${light / 1.26}%)`
 const block = `hsl(${hue}, ${sat}%, ${light / 1.46}%)`
 const border = `hsl(${hue}, ${sat}%, ${light / 1.86}%)`
@@ -40,6 +41,7 @@ export default class ThemeStore {
   border = new Value(border)
   background = new Value(bg)
   gutter = new Value(gutter)
+  menu = new Value(menu)
 
   primary = new Value(accent)
   primary2 = new Value(accent2)

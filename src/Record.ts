@@ -9,23 +9,6 @@ export interface RecordValue {
 
 export default class Record<Kind extends RecordValue> {
 
-  static create<Kind extends RecordValue>(
-    value: Kind, storage: Storage<Kind>,
-    registry: Registry<Kind>
-  ) {
-    const record = new Record(value, storage, registry)
-    Record.save(value, storage)
-    return record
-  }
-
-  static save<Kind extends RecordValue>(value: Kind, storage: Storage<Kind>) {
-    storage.set(value.id, value)
-  }
-
-  static delete<Kind extends RecordValue>(value: Kind, storage: Storage<Kind>) {
-    storage.remove(value.id)
-  }
-
   public id: string
   private value: Value<Kind>
   private storage: Storage<Kind>
@@ -38,23 +21,29 @@ export default class Record<Kind extends RecordValue> {
     this.registry.add(this)
   }
 
+  save() {
+    const value = this.value.get()
+    this.storage.set(value.id, value)
+  }
+
   get() {
     return this.value.get()
   }
 
   set(value: Kind) {
     this.value.set(value)
-    Record.save(value, this.storage)
+    this.storage.set(value.id, value)
   }
 
   assign(value: Partial<Kind>) {
     this.value.assign(value)
-    Record.save(this.value.get(), this.storage)
+    const newValue = this.value.get()
+    this.storage.set(newValue.id, newValue)
   }
 
   delete() {
     this.registry.remove(this)
-    Record.delete(this.value.get(), this.storage)
+    this.storage.remove(this.value.get().id)
   }
 
 }
