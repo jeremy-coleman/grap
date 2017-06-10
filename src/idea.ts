@@ -18,10 +18,9 @@ examples
 
 todo
 - build a graph editor
-  - better perspective
-    - view zoom and offset stats
   - better ux
     - right-click to delete as well
+      - quick prompt actions
     - block dragging autoscroll
   - connect lines between blocks
   - group blocks to create recursive drawings

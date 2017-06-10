@@ -390,10 +390,31 @@ export default class Canvas extends Component<CanvasProps> {
     )
   }
 
+  renderStats() {
+    const { x, y, zoom } = World.CanvasStore.perspective.get()
+    return (
+      <div style={{
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        margin: 8,
+        color: "white",
+        opacity: 0.2,
+        fontFamily: "monospace",
+        textAlign: "right",
+      }}>
+        x: {x.toFixed(0)}<br/>
+        y: {y.toFixed(0)}<br/>
+        zoom: {zoom.toFixed(2)}
+      </div>
+    )
+  }
+
   view() {
     const blockRecords = World.BlockRegistry.get()
     return (
       <div>
+        {this.renderStats()}
         <Draggable
           onDragStart={this.updateSelection}
           onDragMove={this.updateSelection}
