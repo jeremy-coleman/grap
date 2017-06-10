@@ -8,6 +8,7 @@ import World from "./World"
 import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 import { Point } from "./utils"
 import ContextMenu from "./ContextMenu"
+import * as Actions from "./Actions"
 
 interface Perspective {
   x: number
@@ -43,6 +44,14 @@ export class CanvasStore {
     right: 1,
     bottom: 1,
   })
+
+  centerOfView(): Point {
+    const {top, height, width, left} = this.rect.get()
+    return this.transformPoint({
+      y: top + height / 2,
+      x: left + width / 2,
+    })
+  }
 
   // Transform a point on the screen (from Draggable) to a point within a
   // rect, accounting for the perspective.
@@ -161,9 +170,7 @@ export default class Canvas extends Component<CanvasProps> {
 
   handleKeyDown = (e: KeyboardEvent) => {
     if (e.keyCode === keycode("backspace")) {
-      World.CanvasStore.selectedBlocks.get().forEach(block => {
-        block.delete()
-      })
+      Actions.deleteSelection()
     }
     if (e.keyCode === keycode("=")) {
       World.CanvasStore.perspective.update(state => ({

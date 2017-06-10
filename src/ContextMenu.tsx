@@ -35,8 +35,7 @@ export default class ContextMenu extends Component<ContextMenuProps> {
   }
 
   handleInsertBlock = (e) => {
-    const { where } = World.ContextMenuStore.get()
-    Actions.createBlock(World.CanvasStore.transformPoint(where))
+    Actions.createBlock()
     World.ContextMenuStore.close()
   }
 
