@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Component from 'reactive-magic/component'
+import * as React from "react"
+import Component from "reactive-magic/component"
 import { Value } from "reactive-magic"
 import { Point } from "./utils"
 import World from "./World"
@@ -14,12 +14,12 @@ export interface ContextMenuState {
 
 export class ContextMenuStore extends Value<ContextMenuState> {
   constructor() {
-    super({open: false, where: null})
+    super({ open: false, where: null })
   }
 
   close() {
     if (this.get().open) {
-      this.set({open: false, where: null})
+      this.set({ open: false, where: null })
     }
   }
 }
@@ -27,7 +27,6 @@ export class ContextMenuStore extends Value<ContextMenuState> {
 interface ContextMenuProps {}
 
 export default class ContextMenu extends Component<ContextMenuProps> {
-
   static height = 200
   static width = 100
 
@@ -39,13 +38,13 @@ export default class ContextMenu extends Component<ContextMenuProps> {
     window.removeEventListener("keydown", this.handleKeyDown)
   }
 
-  handleKeyDown = (e) => {
+  handleKeyDown = e => {
     if (e.keyCode === keycode("escape")) {
       World.ContextMenuStore.close()
     }
   }
 
-  handleWheel = (e) => {
+  handleWheel = e => {
     e.preventDefault()
   }
 
@@ -64,7 +63,7 @@ export default class ContextMenu extends Component<ContextMenuProps> {
     }
   }
 
-  getMenuItemStyle():  React.CSSProperties {
+  getMenuItemStyle(): React.CSSProperties {
     return {
       paddingLeft: 8,
       paddingRight: 8,
@@ -77,7 +76,7 @@ export default class ContextMenu extends Component<ContextMenuProps> {
   }
 
   handleAction(action) {
-    return (e) => {
+    return e => {
       action()
       World.ContextMenuStore.close()
     }
@@ -90,21 +89,18 @@ export default class ContextMenu extends Component<ContextMenuProps> {
       return null
     }
     return (
-        <div
-          style={this.getMenuStyle(where, rect)}
-          onWheel={this.handleWheel}
-        >
-          {Actions.filter((action) => action.valid()).map(({name, action}) => {
-            return (
-              <div
-                style={this.getMenuItemStyle()}
-                onClick={this.handleAction(action)}
-              >
-                {name}
-              </div>
-            )
-          })}
-        </div>
+      <div style={this.getMenuStyle(where, rect)} onWheel={this.handleWheel}>
+        {Actions.filter(action => action.valid()).map(({ name, action }) => {
+          return (
+            <div
+              style={this.getMenuItemStyle()}
+              onClick={this.handleAction(action)}
+            >
+              {name}
+            </div>
+          )
+        })}
+      </div>
     )
   }
 }

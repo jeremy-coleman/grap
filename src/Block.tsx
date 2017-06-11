@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { Value } from 'reactive-magic'
-import Component from 'reactive-magic/component'
+import * as React from "react"
+import { Value } from "reactive-magic"
+import Component from "reactive-magic/component"
 import Record, { RecordValue } from "./Record"
 import World from "./World"
 import Draggable, { DraggableState } from "./Draggable"
@@ -13,7 +13,6 @@ interface BlockProps {
 const snapSize = 1
 
 export default class Block extends Component<BlockProps> {
-
   // Compute the origin of the block. If the block is selected, account
   // for dragging it as well.
   static computeOrigin(record: BlockRecord, store: DraggableState): Point {
@@ -54,7 +53,7 @@ export default class Block extends Component<BlockProps> {
     } else {
       World.CanvasStore.selectedBlocks.get().forEach(record => {
         record.assign({
-          origin: Block.computeOrigin(record, store)
+          origin: Block.computeOrigin(record, store),
         })
       })
     }
@@ -85,11 +84,7 @@ export default class Block extends Component<BlockProps> {
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
         view={(store, handlers) =>
-          <div
-            style={this.getStyle(store)}
-            {...handlers}
-          />
-        }
+          <div style={this.getStyle(store)} {...handlers} />}
       />
     )
   }
@@ -105,7 +100,6 @@ export interface BlockValue {
 // A BlockRecord is persisted to localStorage and when a block is created,
 // it registers itself with the BlockRegistry.
 export class BlockRecord extends Record<BlockValue> {
-
   static async load(): Promise<Array<BlockRecord>> {
     const blocks = await World.BlockStorage.getAll()
     const records = blocks.map(block => new BlockRecord(block))

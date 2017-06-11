@@ -1,11 +1,10 @@
-import * as React from 'react'
-import Component from 'reactive-magic/component'
+import * as React from "react"
+import Component from "reactive-magic/component"
 import World from "./World"
 
-interface ButtonProps extends React.HTMLProps<HTMLButtonElement> { }
+interface ButtonProps extends React.HTMLProps<HTMLButtonElement> {}
 
 export default class Button extends Component<ButtonProps> {
-
   getStyle(): React.CSSProperties {
     return {
       backgroundColor: World.Theme.secondary2.get(),
@@ -18,8 +17,6 @@ export default class Button extends Component<ButtonProps> {
   }
 
   view() {
-    return (
-      <button style={this.getStyle()} {...this.props}/>
-    )
+    return <button style={this.getStyle()} {...this.props} />
   }
 }

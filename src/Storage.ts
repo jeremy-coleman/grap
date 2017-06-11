@@ -1,7 +1,6 @@
 import { RecordValue } from "./Record"
 
 export default class Storage<Entry> {
-
   constructor(private name: string = "") {}
 
   async get(id): Promise<Entry> {
@@ -19,7 +18,7 @@ export default class Storage<Entry> {
     localStorage.removeItem(this.name + id)
   }
 
-  async getAll(): Promise<Array<Entry>>  {
+  async getAll(): Promise<Array<Entry>> {
     const values = []
     const length = localStorage.length
     for (let i = 0; i < length; i++) {
@@ -27,5 +26,4 @@ export default class Storage<Entry> {
     }
     return values
   }
-
 }

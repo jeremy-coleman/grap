@@ -1,5 +1,5 @@
-import * as React from 'react'
-import Component from 'reactive-magic/component'
+import * as React from "react"
+import Component from "reactive-magic/component"
 import Block from "./Block"
 import World from "./World"
 import uuid from "uuid/v4"
@@ -9,7 +9,6 @@ interface LayoutProps {
 }
 
 export default class Layout extends Component<LayoutProps> {
-
   getContainerStyle(): React.CSSProperties {
     return {
       position: "fixed",

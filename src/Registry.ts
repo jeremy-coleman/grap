@@ -1,4 +1,4 @@
-import { Value } from 'reactive-magic'
+import { Value } from "reactive-magic"
 import Record, { RecordValue } from "./Record"
 
 export default class Registry<Kind extends RecordValue> {

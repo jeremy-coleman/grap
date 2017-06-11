@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { Value, DerivedValue } from 'reactive-magic'
-import Component from 'reactive-magic/component'
+import * as React from "react"
+import { Value, DerivedValue } from "reactive-magic"
+import Component from "reactive-magic/component"
 import uuid from "uuid/v4"
 import keycode from "keycode"
 import Block, { BlockRecord } from "./Block"
@@ -17,7 +17,6 @@ interface Perspective {
 }
 
 export class CanvasStore {
-
   draggableStore = new DraggableStore()
 
   selectedBlocks: Value<Array<BlockRecord>> = new Value([])
@@ -46,7 +45,7 @@ export class CanvasStore {
   })
 
   centerOfView(): Point {
-    const {top, height, width, left} = this.rect.get()
+    const { top, height, width, left } = this.rect.get()
     return this.transformPoint({
       y: top + height / 2,
       x: left + width / 2,
@@ -57,13 +56,13 @@ export class CanvasStore {
   // rect, accounting for the perspective.
   transformPoint(point: Point): Point {
     // normalize x and y from [-0.5,0.5] with 0 at the center
-    const {top, left, width, height} = this.rect.get()
+    const { top, left, width, height } = this.rect.get()
     const centered = {
       x: (point.x - left) / width - 0.5,
       y: (point.y - top) / height - 0.5,
     }
     // zoom in at the center of the screen
-    const {x, y, zoom} = this.perspective.get()
+    const { x, y, zoom } = this.perspective.get()
     const stretched = {
       x: centered.x / zoom,
       y: centered.y / zoom,
@@ -78,8 +77,8 @@ export class CanvasStore {
 
   viewport: DerivedValue<ClientRect> = new DerivedValue(() => {
     const { top, left, bottom, right, width, height } = this.rect.get()
-    const topLeft = this.transformPoint({x: left, y: top})
-    const bottomRight = this.transformPoint({x: right, y: bottom})
+    const topLeft = this.transformPoint({ x: left, y: top })
+    const bottomRight = this.transformPoint({ x: right, y: bottom })
     return {
       top: topLeft.y,
       left: topLeft.x,
@@ -94,7 +93,6 @@ export class CanvasStore {
 interface CanvasProps {}
 
 export default class Canvas extends Component<CanvasProps> {
-
   willMount() {
     window.addEventListener("keydown", this.handleKeyDown)
   }
@@ -162,9 +160,7 @@ export default class Canvas extends Component<CanvasProps> {
     if (!store.down) {
       return null
     } else {
-      return (
-        <div style={this.getSelectionBoxStyle(store)}/>
-      )
+      return <div style={this.getSelectionBoxStyle(store)} />
     }
   }
 
@@ -175,47 +171,46 @@ export default class Canvas extends Component<CanvasProps> {
     if (e.keyCode === keycode("=")) {
       World.CanvasStore.perspective.update(state => ({
         ...state,
-        zoom: state.zoom * 1.1
+        zoom: state.zoom * 1.1,
       }))
     }
     if (e.keyCode === keycode("-")) {
       World.CanvasStore.perspective.update(state => ({
         ...state,
-        zoom: state.zoom / 1.1
+        zoom: state.zoom / 1.1,
       }))
     }
     const step = 10
     if (e.keyCode === keycode("left")) {
       World.CanvasStore.perspective.update(state => ({
         ...state,
-        x: state.x + (step / state.zoom)
+        x: state.x + step / state.zoom,
       }))
     }
     if (e.keyCode === keycode("right")) {
       World.CanvasStore.perspective.update(state => ({
         ...state,
-        x: state.x - (step / state.zoom)
+        x: state.x - step / state.zoom,
       }))
     }
     if (e.keyCode === keycode("up")) {
       World.CanvasStore.perspective.update(state => ({
         ...state,
-        y: state.y + (step / state.zoom)
+        y: state.y + step / state.zoom,
       }))
     }
     if (e.keyCode === keycode("down")) {
       World.CanvasStore.perspective.update(state => ({
         ...state,
-        y: state.y - (step / state.zoom)
+        y: state.y - step / state.zoom,
       }))
     }
   }
 
   private root: Element
-  ref = (node) => {
+  ref = node => {
     this.root = node
   }
-
 
   getContainerStyle(): React.CSSProperties {
     return {
@@ -230,7 +225,7 @@ export default class Canvas extends Component<CanvasProps> {
 
   getPerspectiveStyle(): React.CSSProperties {
     const { x, y, zoom } = World.CanvasStore.perspective.get()
-    const { width, height} = World.CanvasStore.rect.get()
+    const { width, height } = World.CanvasStore.rect.get()
     return {
       position: "absolute",
       left: 0,
@@ -251,40 +246,40 @@ export default class Canvas extends Component<CanvasProps> {
     }
   }
 
-  handleWheel = (e) => {
+  handleWheel = e => {
     e.preventDefault()
     World.ContextMenuStore.close()
     const speed = 0.1
-    const {x, y, zoom} = World.CanvasStore.perspective.get()
+    const { x, y, zoom } = World.CanvasStore.perspective.get()
     if (e.ctrlKey) {
-      const { left, top, width, height} = World.CanvasStore.rect.get()
+      const { left, top, width, height } = World.CanvasStore.rect.get()
       // Offset x and y to zoom in on the mouse location
       const mouse = {
         x: (e.clientX - left - width / 2) / zoom,
         y: (e.clientY - top - height / 2) / zoom,
       }
       World.CanvasStore.perspective.set({
-        x: x - (speed * e.deltaX / zoom) + mouse.x * e.deltaY / 100,
-        y: y - (speed * e.deltaY / zoom) + mouse.y * e.deltaY / 100,
+        x: x - speed * e.deltaX / zoom + mouse.x * e.deltaY / 100,
+        y: y - speed * e.deltaY / zoom + mouse.y * e.deltaY / 100,
         zoom: zoom * Math.exp(-e.deltaY / 100),
       })
     } else {
       World.CanvasStore.perspective.set({
         zoom,
-        x: x - (speed * e.deltaX / zoom),
-        y: y - (speed * e.deltaY / zoom),
+        x: x - speed * e.deltaX / zoom,
+        y: y - speed * e.deltaY / zoom,
       })
     }
   }
 
-  handleContextMenu = (e) => {
+  handleContextMenu = e => {
     e.preventDefault()
     World.ContextMenuStore.set({
       open: true,
       where: {
         x: e.clientX,
         y: e.clientY,
-      }
+      },
     })
   }
 
@@ -295,10 +290,11 @@ export default class Canvas extends Component<CanvasProps> {
     // Between 5 and 20 lines at any zoom
     const step = Math.pow(10, Math.round(Math.log10(viewport.width) - 1.0))
 
-    const vLines = Math.round(viewport.right / step) - Math.round(viewport.left / step) + 1
+    const vLines =
+      Math.round(viewport.right / step) - Math.round(viewport.left / step) + 1
 
     const vDivs = Array(vLines).fill(0).map((_, index) => {
-      const n = (Math.round(viewport.left / step) + index)
+      const n = Math.round(viewport.left / step) + index
       return (
         <div
           key={"v" + n}
@@ -311,16 +307,17 @@ export default class Canvas extends Component<CanvasProps> {
             borderStyle: "solid",
             borderColor: "white",
             opacity: 0.2,
-            transform: `translate3d(${n * step}px,${viewport.top}px,0)`
+            transform: `translate3d(${n * step}px,${viewport.top}px,0)`,
           }}
         />
       )
     })
 
-    const hLines = Math.round(viewport.bottom / step) - Math.round(viewport.top / step) + 1
+    const hLines =
+      Math.round(viewport.bottom / step) - Math.round(viewport.top / step) + 1
 
     const hDivs = Array(hLines).fill(0).map((_, index) => {
-      const n = (Math.round(viewport.top / step) + index)
+      const n = Math.round(viewport.top / step) + index
       return (
         <div
           key={"h" + n}
@@ -333,7 +330,7 @@ export default class Canvas extends Component<CanvasProps> {
             borderStyle: "solid",
             borderColor: "white",
             opacity: 0.2,
-            transform: `translate3d(${viewport.left}px,${n * step}px,0)`
+            transform: `translate3d(${viewport.left}px,${n * step}px,0)`,
           }}
         />
       )
@@ -378,8 +375,8 @@ export default class Canvas extends Component<CanvasProps> {
   }
 
   viewCenterFocus() {
-    const {x, y, zoom} = World.CanvasStore.perspective.get()
-    const { width, height} = World.CanvasStore.rect.get()
+    const { x, y, zoom } = World.CanvasStore.perspective.get()
+    const { width, height } = World.CanvasStore.rect.get()
     const edge = Math.max(1, 8 / zoom)
     return (
       <div
@@ -387,7 +384,9 @@ export default class Canvas extends Component<CanvasProps> {
           position: "absolute",
           top: 0,
           left: 0,
-          transform: `translate3d(${width / 2 - x - edge / 2}px, ${height / 2 - y - edge / 2}px, 0px)`,
+          transform: `translate3d(${width / 2 - x - edge / 2}px, ${height / 2 -
+            y -
+            edge / 2}px, 0px)`,
           borderRadius: edge,
           height: edge,
           width: edge,
@@ -400,18 +399,20 @@ export default class Canvas extends Component<CanvasProps> {
   renderStats() {
     const { x, y, zoom } = World.CanvasStore.perspective.get()
     return (
-      <div style={{
-        position: "absolute",
-        bottom: 0,
-        right: 0,
-        margin: 8,
-        color: "white",
-        opacity: 0.2,
-        fontFamily: "monospace",
-        textAlign: "right",
-      }}>
-        x: {x.toFixed(0)}<br/>
-        y: {y.toFixed(0)}<br/>
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          right: 0,
+          margin: 8,
+          color: "white",
+          opacity: 0.2,
+          fontFamily: "monospace",
+          textAlign: "right",
+        }}
+      >
+        x: {x.toFixed(0)}<br />
+        y: {y.toFixed(0)}<br />
         zoom: {zoom.toFixed(2)}
       </div>
     )
@@ -435,21 +436,16 @@ export default class Canvas extends Component<CanvasProps> {
               onWheel={this.handleWheel}
               onContextMenu={this.handleContextMenu}
             >
-              <div
-                className="perspective"
-                style={this.getPerspectiveStyle()}
-              >
+              <div className="perspective" style={this.getPerspectiveStyle()}>
                 {this.viewSelectionBox(store)}
                 {blockRecords.map(record =>
-                  <Block record={record} key={record.id}/>
+                  <Block record={record} key={record.id} />
                 )}
               </div>
-            </div>
-          }
+            </div>}
         />
-        <ContextMenu/>
+        <ContextMenu />
       </div>
     )
   }
-
 }

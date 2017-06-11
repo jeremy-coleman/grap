@@ -1,5 +1,5 @@
 import World from "./World"
-import { Value } from 'reactive-magic'
+import { Value } from "reactive-magic"
 import Storage from "./Storage"
 import Registry from "./Registry"
 
@@ -8,7 +8,6 @@ export interface RecordValue {
 }
 
 export default class Record<Kind extends RecordValue> {
-
   public id: string
   private value: Value<Kind>
   private storage: Storage<Kind>
@@ -45,5 +44,4 @@ export default class Record<Kind extends RecordValue> {
     this.registry.remove(this)
     this.storage.remove(this.value.get().id)
   }
-
 }

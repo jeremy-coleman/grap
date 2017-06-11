@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { Value } from 'reactive-magic'
-import Component from 'reactive-magic/component'
+import * as React from "react"
+import { Value } from "reactive-magic"
+import Component from "reactive-magic/component"
 import { Point } from "./utils"
 
 interface DraggableHandlers {
@@ -23,12 +23,11 @@ export interface DraggableState {
 
 export class DraggableStore extends Value<DraggableState> {
   constructor() {
-    super({down: false, start: null, end: null})
+    super({ down: false, start: null, end: null })
   }
 }
 
 export default class Draggable extends Component<DraggableProps> {
-
   store: DraggableStore = this.props.draggableStore || new DraggableStore()
 
   willUnmount() {
@@ -100,9 +99,8 @@ export default class Draggable extends Component<DraggableProps> {
   }
 
   view() {
-    return this.props.view(
-      this.store.get(),
-      { onMouseDown: this.handleMouseDown }
-    )
+    return this.props.view(this.store.get(), {
+      onMouseDown: this.handleMouseDown,
+    })
   }
 }
