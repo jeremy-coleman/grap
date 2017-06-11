@@ -1,10 +1,14 @@
 import * as React from "react"
 import Component from "reactive-magic/component"
 import World from "./World"
+import { Point } from "./utils"
 
-interface EdgeProps extends React.SVGProps<SVGPathElement> {}
+interface EdgePathProps {
+  start: Point
+  end: Point
+}
 
-export default class Edge extends Component<EdgeProps> {
+export class EdgePath extends Component<EdgePathProps> {
   getPathStyle(): React.CSSProperties {
     return {
       stroke: "red",
@@ -14,8 +18,7 @@ export default class Edge extends Component<EdgeProps> {
   }
 
   view() {
-    const start = { x: 50, y: 50 }
-    const end = { x: 250, y: 150 }
+    const { start, end } = this.props
     const delta = {
       x: end.x - start.x,
       y: end.y - start.y,

@@ -9,7 +9,7 @@ import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 import { Point } from "./utils"
 import ContextMenu from "./ContextMenu"
 import * as Actions from "./Actions"
-import Edge from "./Edge"
+import { EdgePath } from "./Edge"
 
 interface Perspective {
   x: number
@@ -89,6 +89,8 @@ export class CanvasStore {
       height: bottomRight.y - topLeft.y,
     }
   })
+
+  edge: Value<{ block: BlockRecord; end: Point }> = new Value(null)
 }
 
 interface CanvasProps {}
@@ -419,6 +421,13 @@ export default class Canvas extends Component<CanvasProps> {
     )
   }
 
+  viewEdgePath() {
+    const edge = World.CanvasStore.edge.get()
+    if (edge) {
+      return <EdgePath start={edge.block.get().origin} end={edge.end} />
+    }
+  }
+
   view() {
     const blockRecords = World.BlockRegistry.get()
     return (
@@ -439,10 +448,10 @@ export default class Canvas extends Component<CanvasProps> {
             >
               <div className="perspective" style={this.getPerspectiveStyle()}>
                 {this.viewSelectionBox(store)}
-                <Edge />
                 {blockRecords.map(record =>
                   <Block record={record} key={record.id} />
                 )}
+                {this.viewEdgePath()}
               </div>
             </div>}
         />

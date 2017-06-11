@@ -3,6 +3,8 @@ import Component from "reactive-magic/component"
 import World from "./World"
 import { Value } from "reactive-magic"
 import Draggable, { DraggableState } from "./Draggable"
+import { BlockRecord } from "./Block"
+import { Point } from "./utils"
 
 export class PortStore {
   hoveredPorts = new Value({} as { string: boolean })
@@ -26,12 +28,17 @@ export class PortStore {
 }
 
 interface PortProps extends React.HTMLProps<HTMLDivElement> {
-  id: string
+  name: string
+  block: BlockRecord
 }
 
 export default class Port extends Component<PortProps> {
+  getId() {
+    return this.props.block.id + this.props.name
+  }
+
   getStyle(): React.CSSProperties {
-    const hovering = World.PortStore.isHovered(this.props.id)
+    const hovering = World.PortStore.isHovered(this.getId())
     const hoverColor = World.Theme.subtle.get()
     const normalColor = World.Theme.border.get()
     const size = 12
@@ -43,22 +50,37 @@ export default class Port extends Component<PortProps> {
       color: World.Theme.text.get(),
       outline: "none",
       position: "absolute",
+      top: -size / 2,
       right: -size / 2,
       boxSizing: "border-box",
     }
   }
 
   handleMouseEnter = e => {
-    World.PortStore.hover(this.props.id)
+    World.PortStore.hover(this.getId())
   }
 
   handleMouseLeave = e => {
-    World.PortStore.unhover(this.props.id)
+    World.PortStore.unhover(this.getId())
   }
 
-  handleDragStart = (state: DraggableState) => {}
-  handleDragMove = (state: DraggableState) => {}
-  handleDragEnd = (state: DraggableState) => {}
+  handleDragStart = (state: DraggableState) => {
+    World.CanvasStore.edge.set({
+      block: this.props.block,
+      end: this.props.block.get().origin,
+    })
+  }
+
+  handleDragMove = (state: DraggableState) => {
+    World.CanvasStore.edge.assign({
+      end: World.CanvasStore.transformPoint(state.end),
+    })
+  }
+
+  handleDragEnd = (state: DraggableState) => {
+    World.CanvasStore.edge.set(null)
+    // TODO create the edge!
+  }
 
   view() {
     return (

@@ -86,7 +86,7 @@ export default class Block extends Component<BlockProps> {
         onDragEnd={this.handleDragEnd}
         view={(store, handlers) =>
           <div style={this.getStyle(store)} {...handlers}>
-            <Port id={this.props.record.id + "port"} />
+            <Port block={this.props.record} name="port" />
           </div>}
       />
     )
