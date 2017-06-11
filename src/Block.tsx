@@ -5,6 +5,7 @@ import Record, { RecordValue } from "./Record"
 import World from "./World"
 import Draggable, { DraggableState } from "./Draggable"
 import { Point } from "./utils"
+import Port from "./Port"
 
 interface BlockProps {
   record: BlockRecord
@@ -84,7 +85,9 @@ export default class Block extends Component<BlockProps> {
         onDragStart={this.handleDragStart}
         onDragEnd={this.handleDragEnd}
         view={(store, handlers) =>
-          <div style={this.getStyle(store)} {...handlers} />}
+          <div style={this.getStyle(store)} {...handlers}>
+            <Port id={this.props.record.id + "port"} />
+          </div>}
       />
     )
   }

@@ -4,6 +4,7 @@ import Theme from "./Theme"
 import { BlockValue, BlockRecord } from "./Block"
 import { CanvasStore } from "./Canvas"
 import { ContextMenuStore } from "./ContextMenu"
+import { PortStore } from "./Port"
 
 class World {
   BlockStorage = new Storage() as Storage<BlockValue>
@@ -11,6 +12,7 @@ class World {
   CanvasStore = new CanvasStore()
   Theme = new Theme()
   ContextMenuStore = new ContextMenuStore()
+  PortStore = new PortStore()
 }
 
 const ThisWorld = new World()

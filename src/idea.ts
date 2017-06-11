@@ -17,6 +17,13 @@ examples
 todo
 - build a graph editor
   - connect lines between blocks
+    - Port component
+    - Edge component
+    - CanvasStore edgeStart (Port), edgeEnd (Point)
+    - EdgeRegistry
+    - Port types
+    - Block types
+    - how can we build languages, interact with code, compile and run, etc.
   - group blocks to create recursive drawings
   - copy paste blocks
 

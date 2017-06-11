@@ -9,6 +9,7 @@ import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 import { Point } from "./utils"
 import ContextMenu from "./ContextMenu"
 import * as Actions from "./Actions"
+import Edge from "./Edge"
 
 interface Perspective {
   x: number
@@ -438,6 +439,7 @@ export default class Canvas extends Component<CanvasProps> {
             >
               <div className="perspective" style={this.getPerspectiveStyle()}>
                 {this.viewSelectionBox(store)}
+                <Edge />
                 {blockRecords.map(record =>
                   <Block record={record} key={record.id} />
                 )}
