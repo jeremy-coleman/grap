@@ -9,7 +9,7 @@ import Draggable, { DraggableStore, DraggableState } from "./Draggable"
 import { Point } from "./utils"
 import ContextMenu from "./ContextMenu"
 import * as Actions from "./Actions"
-import { EdgePath } from "./Edge"
+import { PortDirection, EdgePath } from "./Edge"
 
 interface Perspective {
   x: number
@@ -424,7 +424,13 @@ export default class Canvas extends Component<CanvasProps> {
   viewEdgePath() {
     const edge = World.CanvasStore.edge.get()
     if (edge) {
-      return <EdgePath start={edge.block.get().origin} end={edge.end} />
+      return (
+        <EdgePath
+          startDir={PortDirection.right}
+          start={edge.block.get().origin}
+          end={edge.end}
+        />
+      )
     }
   }
 

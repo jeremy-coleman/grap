@@ -27,7 +27,7 @@ export class PortStore {
   }
 }
 
-interface PortProps extends React.HTMLProps<HTMLDivElement> {
+interface PortProps {
   name: string
   block: BlockRecord
 }
@@ -51,7 +51,7 @@ export default class Port extends Component<PortProps> {
       outline: "none",
       position: "absolute",
       top: -size / 2,
-      right: -size / 2,
+      left: -size / 2,
       boxSizing: "border-box",
     }
   }
@@ -93,7 +93,6 @@ export default class Port extends Component<PortProps> {
             onMouseEnter={this.handleMouseEnter}
             onMouseLeave={this.handleMouseLeave}
             style={this.getStyle()}
-            {...this.props}
             {...handlers}
           />}
       />
