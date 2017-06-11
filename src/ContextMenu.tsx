@@ -4,7 +4,8 @@ import { Value } from "reactive-magic"
 import { Point } from "./utils"
 import World from "./World"
 import Button from "./Button"
-import * as Actions from "./Actions"
+import Actions from "./Actions"
+import keycode from "keycode"
 
 export interface ContextMenuState {
   open: boolean
@@ -30,13 +31,22 @@ export default class ContextMenu extends Component<ContextMenuProps> {
   static height = 200
   static width = 100
 
-  handleWheel = (e) => {
-    e.preventDefault()
+  willMount() {
+    window.addEventListener("keydown", this.handleKeyDown)
   }
 
-  handleInsertBlock = (e) => {
-    Actions.createBlock()
-    World.ContextMenuStore.close()
+  willUnmount() {
+    window.removeEventListener("keydown", this.handleKeyDown)
+  }
+
+  handleKeyDown = (e) => {
+    if (e.keyCode === keycode("escape")) {
+      World.ContextMenuStore.close()
+    }
+  }
+
+  handleWheel = (e) => {
+    e.preventDefault()
   }
 
   getMenuStyle(where: Point, rect: ClientRect): React.CSSProperties {
@@ -61,6 +71,15 @@ export default class ContextMenu extends Component<ContextMenuProps> {
       paddingTop: 4,
       paddingBottom: 4,
       cursor: "pointer",
+      fontFamily: "monospace",
+      color: World.Theme.text.get(),
+    }
+  }
+
+  handleAction(action) {
+    return (e) => {
+      action()
+      World.ContextMenuStore.close()
     }
   }
 
@@ -75,12 +94,16 @@ export default class ContextMenu extends Component<ContextMenuProps> {
           style={this.getMenuStyle(where, rect)}
           onWheel={this.handleWheel}
         >
-          <div
-            style={this.getMenuItemStyle()}
-            onClick={this.handleInsertBlock}
-          >
-            Insert Block
-          </div>
+          {Actions.filter((action) => action.valid()).map(({name, action}) => {
+            return (
+              <div
+                style={this.getMenuItemStyle()}
+                onClick={this.handleAction(action)}
+              >
+                {name}
+              </div>
+            )
+          })}
         </div>
     )
   }

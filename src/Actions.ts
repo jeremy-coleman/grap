@@ -29,7 +29,7 @@ export function createBlock() {
 MenuActions.push({
   name: "Create Block",
   action: createBlock,
-  valid: () => true,
+  valid: () => World.CanvasStore.selectedBlocks.get().length === 0,
 })
 
 export function deleteSelection() {
