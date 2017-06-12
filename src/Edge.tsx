@@ -17,6 +17,10 @@ interface EdgePathProps {
   endDir?: PortDirection
 }
 
+function norm({ x, y }) {
+  return Math.pow(Math.pow(x, 2) + Math.pow(y, 2), 0.5)
+}
+
 export class EdgePath extends Component<EdgePathProps> {
   getPathStyle(): React.CSSProperties {
     return {
@@ -41,7 +45,7 @@ export class EdgePath extends Component<EdgePathProps> {
       y: end.y - start.y,
     }
 
-    const padding = 50
+    const padding = 500
 
     const pathStart = {
       x: delta.x > 0 ? padding : -delta.x + padding,
@@ -58,16 +62,16 @@ export class EdgePath extends Component<EdgePathProps> {
     bezier += `M${pathStart.x} ${pathStart.y} `
     // place a control point for the start
     if (this.props.startDir === PortDirection.right) {
-      const rigidity = this.getRigidity(delta.x)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `C ${pathStart.x + rigidity} ${pathStart.y}, `
     } else if (this.props.startDir === PortDirection.left) {
-      const rigidity = this.getRigidity(delta.x)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `C ${pathStart.x - rigidity} ${pathStart.y}, `
     } else if (this.props.startDir === PortDirection.up) {
-      const rigidity = this.getRigidity(delta.y)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `C ${pathStart.x} ${pathStart.y - rigidity}, `
     } else if (this.props.startDir === PortDirection.down) {
-      const rigidity = this.getRigidity(delta.y)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `C ${pathStart.x} ${pathStart.y + rigidity}, `
     } else {
       bezier += `C ${pathStart.x} ${pathStart.y}, `
@@ -75,16 +79,16 @@ export class EdgePath extends Component<EdgePathProps> {
     // place a control for the end
     // place a control point for the start
     if (this.props.endDir === PortDirection.right) {
-      const rigidity = this.getRigidity(delta.x)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `${pathEnd.x - rigidity} ${pathEnd.y}, `
     } else if (this.props.endDir === PortDirection.left) {
-      const rigidity = this.getRigidity(delta.x)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `${pathEnd.x + rigidity} ${pathEnd.y}, `
     } else if (this.props.endDir === PortDirection.up) {
-      const rigidity = this.getRigidity(delta.y)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `${pathEnd.x} ${pathEnd.y - rigidity}, `
     } else if (this.props.endDir === PortDirection.down) {
-      const rigidity = this.getRigidity(delta.y)
+      const rigidity = this.getRigidity(norm(delta))
       bezier += `${pathEnd.x} ${pathEnd.y + rigidity}, `
     } else {
       bezier += `${pathEnd.x} ${pathEnd.y}, `
