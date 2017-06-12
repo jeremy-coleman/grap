@@ -156,6 +156,7 @@ export default class Canvas extends Component<CanvasProps> {
       transformOrigin: "top left",
       transform: `translate3d(${start.x}px,${start.y}px,0) rotateX(${rotateX}) rotateY(${rotateY})`,
       boxSizing: "border-box",
+      zIndex: World.zIndex.selectionBox,
     }
   }
 
@@ -426,7 +427,7 @@ export default class Canvas extends Component<CanvasProps> {
     if (edge) {
       return (
         <EdgePath
-          startDir={PortDirection.right}
+          startDir={PortDirection.left}
           start={edge.block.get().origin}
           end={edge.end}
         />
@@ -454,10 +455,10 @@ export default class Canvas extends Component<CanvasProps> {
             >
               <div className="perspective" style={this.getPerspectiveStyle()}>
                 {this.viewSelectionBox(store)}
+                {this.viewEdgePath()}
                 {blockRecords.map(record =>
                   <Block record={record} key={record.id} />
                 )}
-                {this.viewEdgePath()}
               </div>
             </div>}
         />

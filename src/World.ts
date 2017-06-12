@@ -13,6 +13,15 @@ class World {
   Theme = new Theme()
   ContextMenuStore = new ContextMenuStore()
   PortStore = new PortStore()
+
+  zIndex = {
+    bg: 0,
+    selectionBox: 1,
+    edge: 2,
+    block: 3,
+    edgePath: 4,
+    port: 5,
+  }
 }
 
 const ThisWorld = new World()

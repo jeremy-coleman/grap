@@ -75,6 +75,7 @@ export default class Block extends Component<BlockProps> {
       position: "absolute",
       transform: `translate3d(${origin.x}px,${origin.y}px, 0)`,
       boxSizing: "border-box",
+      zIndex: World.zIndex.block,
     }
   }
 

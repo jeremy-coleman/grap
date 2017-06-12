@@ -53,6 +53,7 @@ export default class Port extends Component<PortProps> {
       top: -size / 2,
       left: -size / 2,
       boxSizing: "border-box",
+      zIndex: World.zIndex.port,
     }
   }
 

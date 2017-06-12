@@ -97,6 +97,7 @@ export class EdgePath extends Component<EdgePathProps> {
         width={Math.abs(delta.x) + 2 * padding}
         height={Math.abs(delta.y) + 2 * padding}
         style={{
+          zIndex: World.zIndex.edge,
           position: "absolute",
           top: start.y - padding,
           left: start.x - padding,
