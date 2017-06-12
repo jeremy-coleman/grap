@@ -19,7 +19,6 @@ class World {
     selectionBox: 1,
     edge: 2,
     block: 3,
-    edgePath: 4,
     port: 5,
   }
 }
