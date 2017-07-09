@@ -16,12 +16,21 @@ examples
 
 todo
 - build a graph editor
+	- block definitions
+		- function block and data block
+		- ui fields, async fields
+		- state machines
+
+
   - connect lines between blocks
-    - EdgeRegistry and EdgeStorage
     - Block types and Block fields
+    - EdgeRegistry and EdgeStorage
     - Port types
     - Block types
     - how can we build languages, interact with code, compile and run, etc.
+    - better edge paths
+      - dynamic rigidity
+      - control point up and down if delta.y is close to 0
   - group blocks to create recursive drawings
   - copy paste blocks
 
