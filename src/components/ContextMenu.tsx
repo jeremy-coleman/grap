@@ -76,6 +76,7 @@ export default class ContextMenu extends Component<ContextMenuProps> {
 					.map(({ name, action }) => {
 						return (
 							<div
+								key={name}
 								style={this.getMenuItemStyle()}
 								onClick={this.handleAction(action)}
 							>
