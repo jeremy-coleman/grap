@@ -18,6 +18,7 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "reactive-magic": "^1.9.0",
+    "typescript-validator": "^1.0.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
@@ -31,6 +32,7 @@
     "babel-preset-stage-0": "^6.22.0",
     "html-webpack-plugin": "^2.28.0",
     "ts-loader": "^2.0.1",
+    "typelevel-ts": "^0.2.3",
     "typescript": "^2.5.0-dev.20170626",
     "webpack": "^2.2.1",
     "webpack-dev-server": "^2.4.1"
