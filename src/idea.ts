@@ -54,14 +54,14 @@ export type Node<P extends PortMap> = {
 	component: React.Component<{ ports: PortMapInputs<P> }, any>
 }
 
-interface CounterPorts {
+type CounterPorts = {
 	// This value is gettable from this component, but settable by another component.
 	delta?: Port<Magic.Gettable<number>, Magic.Settable<number>>
 	// This value is settable from this component, but gettgable by another component.
 	value: Port<Magic.Settable<number>, Magic.Gettable<number>>
 }
 
-export interface CounterProps extends ComponentProps<CounterPorts> {}
+export type CounterProps = ComponentProps<CounterPorts>
 
 export class Counter extends Component<CounterProps> {
 	private delta: Magic.Gettable<number>
