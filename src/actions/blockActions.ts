@@ -3,7 +3,11 @@ import World from "../World"
 import BlockRecord from "../records/Block"
 
 export function createBlock() {
-	const { where } = World.ContextMenuStore.get()
+	const state = World.ContextMenuStore.get()
+	if (!state.open) {
+		return
+	}
+	const where = state.where
 	const origin = where
 		? World.CanvasStore.transformPoint(where)
 		: World.CanvasStore.centerOfView()

@@ -18,9 +18,8 @@ export default class Block extends Component<BlockProps> {
 	// for dragging it as well.
 	static computeOrigin(record: BlockRecord, store: DraggableState): Point {
 		const selected = World.CanvasStore.blockIsSelected(record)
-		const { down } = store
 		const { origin } = record.get()
-		if (selected && down) {
+		if (selected && store.down) {
 			const start = World.CanvasStore.transformPoint(store.start)
 			const end = World.CanvasStore.transformPoint(store.end)
 			return {
@@ -43,7 +42,11 @@ export default class Block extends Component<BlockProps> {
 
 	// If a drag ends without moving, its essentially a click
 	didntMove(store: DraggableState) {
-		return store.start.x === store.end.x && store.start.y === store.end.y
+		if (store.down) {
+			return store.start.x === store.end.x && store.start.y === store.end.y
+		} else {
+			return false
+		}
 	}
 
 	// If we clicked a block, then select it, otherwise, update the positions
@@ -53,7 +56,9 @@ export default class Block extends Component<BlockProps> {
 			World.CanvasStore.selectedBlocks.set([this.props.record])
 		} else {
 			World.CanvasStore.selectedBlocks.get().forEach(record => {
-				record.assign({
+				const state = record.get()
+				record.set({
+					...state,
 					origin: Block.computeOrigin(record, store),
 				})
 			})
@@ -85,10 +90,11 @@ export default class Block extends Component<BlockProps> {
 				draggableStore={World.CanvasStore.draggableStore}
 				onDragStart={this.handleDragStart}
 				onDragEnd={this.handleDragEnd}
-				view={(store, handlers) =>
+				view={(store, handlers) => (
 					<div style={this.getStyle(store)} {...handlers}>
 						<Port block={this.props.record} name="port" />
-					</div>}
+					</div>
+				)}
 			/>
 		)
 	}

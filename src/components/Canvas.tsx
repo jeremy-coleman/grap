@@ -4,7 +4,7 @@ import keycode from "keycode"
 import Block from "./Block"
 import World from "../World"
 import Draggable from "./Draggable"
-import { DraggableState } from "../stores/Draggable"
+import { DraggableState, DraggableDown } from "../stores/Draggable"
 import ContextMenu from "./ContextMenu"
 import * as selectionActions from "../actions/selectionActions"
 import { PortDirection, EdgePath } from "./Edge"
@@ -32,9 +32,9 @@ export default class Canvas extends Component<CanvasProps> {
 
 	updateSelection = (store: DraggableState) => {
 		World.ContextMenuStore.close()
-		const start = World.CanvasStore.transformPoint(store.start)
-		const end = World.CanvasStore.transformPoint(store.end)
 		if (store.down) {
+			const start = World.CanvasStore.transformPoint(store.start)
+			const end = World.CanvasStore.transformPoint(store.end)
 			const blocks = World.BlockRegistry.get()
 			const left = Math.min(start.x, end.x)
 			const right = Math.max(start.x, end.x)
@@ -52,7 +52,7 @@ export default class Canvas extends Component<CanvasProps> {
 		}
 	}
 
-	getSelectionBoxStyle(store: DraggableState): React.CSSProperties {
+	getSelectionBoxStyle(store: DraggableDown): React.CSSProperties {
 		const start = World.CanvasStore.transformPoint(store.start)
 		const end = World.CanvasStore.transformPoint(store.end)
 		const flipY = end.x < start.x
@@ -68,7 +68,9 @@ export default class Canvas extends Component<CanvasProps> {
 			opacity: 0.1,
 			position: "absolute",
 			transformOrigin: "top left",
-			transform: `translate3d(${start.x}px,${start.y}px,0) rotateX(${rotateX}) rotateY(${rotateY})`,
+			transform: `translate3d(${start.x}px,${
+				start.y
+			}px,0) rotateX(${rotateX}) rotateY(${rotateY})`,
 			boxSizing: "border-box",
 			zIndex: World.zIndex.selectionBox,
 		}
@@ -211,48 +213,52 @@ export default class Canvas extends Component<CanvasProps> {
 		const vLines =
 			Math.round(viewport.right / step) - Math.round(viewport.left / step) + 1
 
-		const vDivs = Array(vLines).fill(0).map((_, index) => {
-			const n = Math.round(viewport.left / step) + index
-			return (
-				<div
-					key={"v" + n}
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						height: viewport.height,
-						borderWidth: 1 / zoom,
-						borderStyle: "solid",
-						borderColor: "white",
-						opacity: 0.2,
-						transform: `translate3d(${n * step}px,${viewport.top}px,0)`,
-					}}
-				/>
-			)
-		})
+		const vDivs = Array(vLines)
+			.fill(0)
+			.map((_, index) => {
+				const n = Math.round(viewport.left / step) + index
+				return (
+					<div
+						key={"v" + n}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							height: viewport.height,
+							borderWidth: 1 / zoom,
+							borderStyle: "solid",
+							borderColor: "white",
+							opacity: 0.2,
+							transform: `translate3d(${n * step}px,${viewport.top}px,0)`,
+						}}
+					/>
+				)
+			})
 
 		const hLines =
 			Math.round(viewport.bottom / step) - Math.round(viewport.top / step) + 1
 
-		const hDivs = Array(hLines).fill(0).map((_, index) => {
-			const n = Math.round(viewport.top / step) + index
-			return (
-				<div
-					key={"h" + n}
-					style={{
-						position: "absolute",
-						top: 0,
-						left: 0,
-						width: viewport.width,
-						borderWidth: 1 / zoom,
-						borderStyle: "solid",
-						borderColor: "white",
-						opacity: 0.2,
-						transform: `translate3d(${viewport.left}px,${n * step}px,0)`,
-					}}
-				/>
-			)
-		})
+		const hDivs = Array(hLines)
+			.fill(0)
+			.map((_, index) => {
+				const n = Math.round(viewport.top / step) + index
+				return (
+					<div
+						key={"h" + n}
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: viewport.width,
+							borderWidth: 1 / zoom,
+							borderStyle: "solid",
+							borderColor: "white",
+							opacity: 0.2,
+							transform: `translate3d(${viewport.left}px,${n * step}px,0)`,
+						}}
+					/>
+				)
+			})
 
 		return [...vDivs, hDivs]
 	}
@@ -360,7 +366,7 @@ export default class Canvas extends Component<CanvasProps> {
 					onDragStart={this.updateSelection}
 					onDragMove={this.updateSelection}
 					onDragEnd={this.updateSelection}
-					view={(store, handlers) =>
+					view={(store, handlers) => (
 						<div
 							className="canvas"
 							{...handlers}
@@ -372,11 +378,12 @@ export default class Canvas extends Component<CanvasProps> {
 							<div className="perspective" style={this.getPerspectiveStyle()}>
 								{this.viewSelectionBox(store)}
 								{this.viewEdgePath()}
-								{blockRecords.map(record =>
+								{blockRecords.map(record => (
 									<Block record={record} key={record.id} />
-								)}
+								))}
 							</div>
-						</div>}
+						</div>
+					)}
 				/>
 				<ContextMenu />
 			</div>

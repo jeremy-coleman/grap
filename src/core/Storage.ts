@@ -1,7 +1,7 @@
 export default class Storage<Entry> {
 	constructor(private name: string = "") {}
 
-	async get(id): Promise<Entry> {
+	async get(id): Promise<Entry | undefined> {
 		const value = localStorage.getItem(this.name + id)
 		if (value) {
 			return JSON.parse(value)
@@ -17,10 +17,12 @@ export default class Storage<Entry> {
 	}
 
 	async getAll(): Promise<Array<Entry>> {
-		const values = []
+		const values: Array<Entry> = []
 		const length = localStorage.length
 		for (let i = 0; i < length; i++) {
-			values.push(JSON.parse(localStorage.getItem(localStorage.key(i))))
+			values.push(
+				JSON.parse(localStorage.getItem(localStorage.key(i) as string) as any)
+			)
 		}
 		return values
 	}

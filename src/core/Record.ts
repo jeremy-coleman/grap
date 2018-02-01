@@ -33,12 +33,6 @@ export default class Record<Kind extends RecordValue> {
 		this.storage.set(value.id, value)
 	}
 
-	assign(value: Partial<Kind>) {
-		this.value.assign(value)
-		const newValue = this.value.get()
-		this.storage.set(newValue.id, newValue)
-	}
-
 	delete() {
 		this.registry.remove(this)
 		this.storage.remove(this.value.get().id)

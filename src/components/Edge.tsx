@@ -106,9 +106,9 @@ export class EdgePath extends Component<EdgePathProps> {
 					top: start.y - padding,
 					left: start.x - padding,
 					transformOrigin: `${padding}px ${padding}px`,
-					transform: `translate3d(${delta.x > 0 ? 0 : delta.x}px, ${delta.y > 0
-						? 0
-						: delta.y}px, 0)`,
+					transform: `translate3d(${delta.x > 0 ? 0 : delta.x}px, ${
+						delta.y > 0 ? 0 : delta.y
+					}px, 0)`,
 				}}
 			>
 				<path style={this.getPathStyle()} d={bezier} />

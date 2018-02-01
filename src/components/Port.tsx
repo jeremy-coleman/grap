@@ -51,13 +51,17 @@ export default class Port extends Component<PortProps> {
 	}
 
 	handleDragMove = (state: DraggableState) => {
-		World.CanvasStore.edge.assign({
-			end: World.CanvasStore.transformPoint(state.end),
-		})
+		const edge = World.CanvasStore.edge.get()
+		if (edge) {
+			World.CanvasStore.edge.set({
+				...edge,
+				end: World.CanvasStore.transformPoint(edge.end),
+			})
+		}
 	}
 
 	handleDragEnd = (state: DraggableState) => {
-		World.CanvasStore.edge.set(null)
+		World.CanvasStore.edge.set(undefined)
 		// TODO create the edge!
 	}
 
@@ -67,13 +71,14 @@ export default class Port extends Component<PortProps> {
 				onDragStart={this.handleDragStart}
 				onDragMove={this.handleDragMove}
 				onDragEnd={this.handleDragEnd}
-				view={(state, handlers) =>
+				view={(state, handlers) => (
 					<div
 						onMouseEnter={this.handleMouseEnter}
 						onMouseLeave={this.handleMouseLeave}
 						style={this.getStyle()}
 						{...handlers}
-					/>}
+					/>
+				)}
 			/>
 		)
 	}

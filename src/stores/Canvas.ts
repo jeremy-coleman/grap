@@ -82,5 +82,7 @@ export default class CanvasStore {
 		}
 	})
 
-	edge: Value<{ block: BlockRecord; end: Point }> = new Value(null)
+	edge: Value<{ block: BlockRecord; end: Point } | undefined> = new Value(
+		undefined
+	)
 }

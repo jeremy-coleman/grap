@@ -13,6 +13,88 @@ https://www.typescriptlang.org/play/index.html#src=%2F%2F%20I%20have%20direction
 - build the interface
 - build electron app and create git, npm, filesystem abstraction
 
+---
+Discussion
+- the state of the application is defined by the ports.
+	- the ui state of each node can be local to the component.
+- how does instantiation work? how do edges work?
+	- all values and relationships should be lazy so we dont have to compute the dependency
+		graph when evaluating.
+	- Gettable
+		- ports that you call .get() on to get their value (lazily).
+		- you can addListener() to be notified when their value is stale, but don't .get() it until
+			you need it because other values may change on the same tick.
+		- you can removeListener() to clean up when an edge gets removed.
+		- using reactive magic you'll never have to worry about listeners
+	- Settable extends Gettable
+		- ports that you call .set() on to set their value and emit to their listeners.
+
+	- Examples
+		- A counter block with a delta. In input delta is gettable. The input value is settable.
+			When delta does not exist, we can use an internal value that an be changed by the UI.
+			When the delta port is connected, we simply use that value to .get() from.
+
+		- What happens when we connect two values the same. Imagine we have 3 "scale blocks" and we
+			want them all to be in sync. The UI an define them and they are all controlled by the same
+			underlying scale. You can imagine connecting all three edges together to define that they
+			are all synced up. There's no need to encode control flow in the UI. Think about excel.
+
+			Do ports need the in/out concept? Can we simply clone and connect values?
+			Can we build a UI that delegates these concepts to the plugin?
+
+			Number blocks and counter blocks, the way pure data works, encodes events and stuff like that.
+			How could our UI plugin abstraction accomodate this sort of use case?
+
+			What if I just want to create a network and having things react to their position in it?
+
+			We need a generalization for the simplest part of this... who's connected to who, can they
+			connect, and potentially some sort of initialization handshake when connections are created
+			and removed. We can render ports however we want in the UI. Its not necessary to have them
+			pre-baked.
+
+			Lets think about the UI components first...
+
+			<Edge id={string} start={Port.id} end={Port.id}/>
+			<Port id={string}/>
+
+			// There's some global registry of ports and each port has an input
+			// schema and an output schema. This schema doesnt have to be complex.
+			// It can simply be a label that need to identify what its expecting.
+			const ports = {
+				1: {input: "get(number)", output: "set(number)"}
+			}
+			In order for two ports to be able to be connected, the input and output
+			of those ports must match. That is, port 1 accepts a input of "get(number)"
+			which means it wants to be able to get a number from some other block. Another
+			block which generates values has an input of "set(number)" and an output of
+			"get(number)" which means that it accepts a value that it can set values on
+			and means that it should connect to other ports that...
+
+
+			Even this is too complicated. A port can be literally anything. The handshake is up
+			to plugins themselves. We just want to organize the handshake...
+
+			type Port<V,O> = {
+				value: V
+				canConnect(port: Port<O>): boolean
+				handleConnect(port: Port<O>) {}
+				handleDisconnect(port: Port<O>) {}
+			}
+
+			Then the Node needs some fascilities to handle handshaking with other nodes through
+			their ports.
+
+			type Node<Ports extends {[key: string]: Port<any,any>}> = {
+				ports: Ports
+			}
+
+
+	- concrete use cases:
+		- Number block
+			- creates a Value, as Gettable and Settable
+		- Counter block
+			- created a
+
 */
 
 // import * as validate from "typescript-validator"
@@ -72,6 +154,9 @@ export type CounterProps = ComponentProps<CounterPorts>
 function pipe<T>(from: Magic.Gettable<T>, to: Magic.Gettable<T>) {
 	// from.
 }
+
+// How do I pipe a gettable into a settable?
+// How do I pipe a settable into a gettable?
 
 export class Counter extends Component<CounterProps> {
 	private delta: Magic.Gettable<number> = new Magic.Value(0)

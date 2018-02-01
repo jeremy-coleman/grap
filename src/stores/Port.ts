@@ -1,7 +1,7 @@
 import { Value } from "reactive-magic"
 
 export default class PortStore {
-	hoveredPorts = new Value({} as { string: boolean })
+	hoveredPorts = new Value<{ [key: string]: boolean }>({})
 
 	isHovered(id: string) {
 		const value = this.hoveredPorts.get()

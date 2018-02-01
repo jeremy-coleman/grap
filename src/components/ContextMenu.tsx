@@ -65,12 +65,15 @@ export default class ContextMenu extends Component<ContextMenuProps> {
 
 	view() {
 		const rect = World.CanvasStore.rect.get()
-		const { open, where } = World.ContextMenuStore.get()
-		if (!open) {
+		const menu = World.ContextMenuStore.get()
+		if (!menu.open) {
 			return null
 		}
 		return (
-			<div style={this.getMenuStyle(where, rect)} onWheel={this.handleWheel}>
+			<div
+				style={this.getMenuStyle(menu.where, rect)}
+				onWheel={this.handleWheel}
+			>
 				{menuActions
 					.filter(action => action.valid())
 					.map(({ name, action }) => {

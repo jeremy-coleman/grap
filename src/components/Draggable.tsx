@@ -60,9 +60,10 @@ export default class Draggable extends Component<DraggableProps> {
 				x: e.pageX,
 				y: e.pageY,
 			}
-			this.store.assign({
+			this.store.update(state => ({
+				...state,
 				end: point,
-			})
+			}))
 			if (this.props.onDragMove) {
 				this.props.onDragMove(this.store.get())
 			}
@@ -75,11 +76,7 @@ export default class Draggable extends Component<DraggableProps> {
 			if (this.props.onDragEnd) {
 				this.props.onDragEnd(store)
 			}
-			this.store.set({
-				down: false,
-				start: null,
-				end: null,
-			})
+			this.store.set({ down: false })
 			this.stopListeners()
 		}
 	}
