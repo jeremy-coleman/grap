@@ -1,0 +1,40 @@
+
+
+export default class Storage<Entry> {
+	
+	constructor(private name: string = "") {}
+
+	async get(id): Promise<Entry | undefined> {
+		const value = localStorage.getItem(this.name + id)
+		if (value) {
+			return JSON.parse(value)
+		}
+	}
+
+	async set(id, value: Entry) {
+		localStorage.setItem(this.name + id, JSON.stringify(value))
+	}
+
+	async remove(id) {
+		localStorage.removeItem(this.name + id)
+	}
+
+
+//just catch the error from no item..could probably just set a default item in the constructor also
+	async getAll(): Promise<Array<Entry>> {
+		const values: Array<Entry> = []
+		const length = localStorage.length
+		const key = localStorage.key
+		for (let i = -1; i < length; i++) {
+try {
+			values.push(
+				//@ts-ignore
+				JSON.parse(localStorage.getItem(key(i)))
+			)}
+
+catch (e){}
+
+}
+		return values
+	}
+}
